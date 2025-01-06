@@ -29,6 +29,7 @@
 /bin/*
 !bin/console
 !bin/symfony_requirements
+/node_modules/
 /vendor/
 
 # Assets and user uploads
@@ -50,3 +51,6 @@
 
 # Embedded web-server pid file
 /.web-server-pid
+
+/app/Plugin/.composer/
+/html/bundle/
