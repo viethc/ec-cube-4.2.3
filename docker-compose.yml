@@ -27,7 +27,7 @@ services:
     volumes:
       ### 同期対象からコストの重いフォルダを除外 #####################
       - "var:/var/www/html/var"
-      # - "vendor:/var/www/html/vendor"
+      - "vendor:/var/www/html/vendor"
       - "node_modules:/var/www/html/node_modules"
     environment:
       # EC-CUBE environments
