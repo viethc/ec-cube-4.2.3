@@ -11,6 +11,15 @@ class Nav implements EccubeNav
      */
     public static function getNav()
     {
-        return [];
+        return [
+            'order' => [
+                'children' => [
+                    'plugin_customer_coupon' => [
+                        'name' => 'クーポン一覧管理',
+                        'url' => 'plugin_customer_coupon_list',
+                    ],
+                ],
+            ],
+        ];
     }
 }
