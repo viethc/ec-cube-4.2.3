@@ -39,7 +39,7 @@ class CouponOrder
     private $available_to_date;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="datetime")
      */
     private $date_of_use;
 
