@@ -15,8 +15,12 @@ class Nav implements EccubeNav
             'order' => [
                 'children' => [
                     'plugin_customer_coupon' => [
-                        'name' => 'クーポン一覧管理',
+                        'name' => 'クーポン管理',
                         'url' => 'plugin_customer_coupon_list',
+                    ],
+                    'plugin_customer_coupon_order' => [
+                        'name' => '顧客のクーポン一覧',
+                        'url' => 'plugin_customer_coupon_order_list',
                     ],
                 ],
             ],

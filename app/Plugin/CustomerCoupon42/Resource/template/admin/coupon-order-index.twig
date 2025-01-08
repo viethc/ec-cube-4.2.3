@@ -1,0 +1,72 @@
+{#
+ This file is part of the Coupon plugin
+
+ Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+ http://www.ec-cube.co.jp/
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['order', 'plugin_customer_coupon_order'] %}
+
+{% block title %}{{ 'plugin_customer_coupon.admin.order.index.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'plugin_customer_coupon.admin.order.index.subtitle'|trans }}{% endblock %}
+
+{% block main %}
+<form name="search_form" id="search_form" method="post" action="">
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span class="normal">{{ 'plugin_customer_coupon.admin.index.number'|trans({'%number%': CouponsOrder|length})|raw }}</span></div>
+                    <div class="card-body p-0">
+                        <table class="table tabel-sm">
+                            <thead>
+                            <tr>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col01'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col02'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col03'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.order.index.col04'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.order.index.col05'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col08'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col06'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col09'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col11'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.order.index.col13'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.label.discount_price'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for Coupon in CouponsOrder %}
+                            <tr>
+                                <td class="coupon_id">{{ Coupon.coupon_id }}</td>
+                                <td class="coupon_cd">{{ Coupon.coupon_cd }}</td>
+                                <td class="coupon_name">{{ Coupon.coupon_name }}</td>
+                                <td>{{ Coupon.customer_id }}</td>
+                                <td>{{ Coupon.email }}</td>
+                                <td>{{ Coupon.coupon_lower_limit|price }}</td>
+                                <td class="coupon_discount">{{ Coupon.discount_rate }} %</td>
+                                <td>{{ Coupon.available_from_date|date_format }} ～ {{ Coupon.available_to_date|date_format }}</td>
+                                <td>
+                                    {% if Coupon.date_of_use %}
+                                        {{ 'plugin_customer_coupon.admin.order.use_status.yes'|trans }}
+                                    {% else %}
+                                        {{ 'plugin_customer_coupon.admin.order.use_status.no'|trans }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ Coupon.date_of_use|date_format }}</td>                                
+                                <td>{{ Coupon.discount|price }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

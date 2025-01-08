@@ -1,12 +1,14 @@
 # the coupon index page
 plugin_customer_coupon.admin.index.title: クーポン一覧管理
 plugin_customer_coupon.admin.index.subtitle: クーポン内容設定
+plugin_customer_coupon.admin.order.index.title: 顧客のクーポン一覧
+plugin_customer_coupon.admin.order.index.subtitle: 最小金額による割引率
 plugin_customer_coupon.admin.index.number: <strong>%number% 件</strong> が該当しました
 plugin_customer_coupon.admin.index.col01: クーポンID
 plugin_customer_coupon.admin.index.col02: クーポンコード
 plugin_customer_coupon.admin.index.col03: クーポン名
-# plugin_customer_coupon.admin.index.col04: 種別
-# plugin_customer_coupon.admin.index.col05: 会員のみ
+plugin_customer_coupon.admin.order.index.col04: 顧客
+plugin_customer_coupon.admin.order.index.col05: 顧客のメール
 plugin_customer_coupon.admin.index.col06: 値引き
 plugin_customer_coupon.admin.index.col07: 残発行枚数
 plugin_customer_coupon.admin.index.col08: 下限金額
@@ -14,36 +16,39 @@ plugin_customer_coupon.admin.index.col09: 有効期間
 plugin_customer_coupon.admin.index.col10: 編集
 plugin_customer_coupon.admin.index.col11: 状態
 plugin_customer_coupon.admin.index.col12: 削除
+plugin_customer_coupon.admin.order.index.col13: 使用時間
 plugin_customer_coupon.admin.index.delete__confirm_title: クーポンを削除します
 plugin_customer_coupon.admin.index.delete__confirm_message: クーポンを削除してよろしいですか？
 plugin_customer_coupon.admin.coupon_member.yes: 会員のみ
 plugin_customer_coupon.admin.coupon_member.no: なし
-plugin_customer_coupon.admin.coupon_type.product: 商品
-plugin_customer_coupon.admin.coupon_type.category: カテゴリ
-plugin_customer_coupon.admin.coupon_type.all: 全商品
+plugin_customer_coupon.admin.order.use_status.yes: 使用済
+plugin_customer_coupon.admin.order.use_status.no: 未使用
+# plugin_customer_coupon.admin.coupon_type.product: 商品
+# plugin_customer_coupon.admin.coupon_type.category: カテゴリ
+# plugin_customer_coupon.admin.coupon_type.all: 全商品
 plugin_customer_coupon.admin.index.create_button: クーポンを新規登録
 # register page
 plugin_customer_coupon.admin.regist.title: クーポン管理
 plugin_customer_coupon.admin.regist.subtitle: クーポン内容設定
 plugin_customer_coupon.admin.regist.header: クーポン情報
-plugin_customer_coupon.admin.regist.discount_price.note: 合計金額から設定金額を値引きします。
+# plugin_customer_coupon.admin.regist.discount_price.note: 合計金額から設定金額を値引きします。
 plugin_customer_coupon.admin.regist.discount_rate.note: 対象商品の合計金額から設定した率を値引きします。
 plugin_customer_coupon.admin.regist.coupon_lower_limit.note: 対象商品の合計金額が、下限金額以上の場合にクーポンを利用できます。
-plugin_customer_coupon.admin.regist.header.product: 商品情報
-plugin_customer_coupon.admin.regist.header.category: カテゴリ情報
-plugin_customer_coupon.admin.regist.modal.product: 商品検索
-plugin_customer_coupon.admin.regist.modal.category: カテゴリ検索
-plugin_customer_coupon.admin.regist.modal.search: 検索
-plugin_customer_coupon.admin.regist.remove_product_confirm: 登録済みの商品があります。削除してよろしいですか。
-plugin_customer_coupon.admin.regist.remove_category_confirm: 登録済みのカテゴリがあります。削除してよろしいですか。
-plugin_customer_coupon.admin.regist.remove_both_confirm: 登録済みの商品・カテゴリがあります。削除してよろしいですか。
+# plugin_customer_coupon.admin.regist.header.product: 商品情報
+# plugin_customer_coupon.admin.regist.header.category: カテゴリ情報
+# plugin_customer_coupon.admin.regist.modal.product: 商品検索
+# plugin_customer_coupon.admin.regist.modal.category: カテゴリ検索
+# plugin_customer_coupon.admin.regist.modal.search: 検索
+# plugin_customer_coupon.admin.regist.remove_product_confirm: 登録済みの商品があります。削除してよろしいですか。
+# plugin_customer_coupon.admin.regist.remove_category_confirm: 登録済みのカテゴリがあります。削除してよろしいですか。
+# plugin_customer_coupon.admin.regist.remove_both_confirm: 登録済みの商品・カテゴリがあります。削除してよろしいですか。
 plugin_customer_coupon.admin.label.coupon_cd: クーポンコード
 plugin_customer_coupon.admin.label.coupon_name: クーポン名
-plugin_customer_coupon.admin.label.coupon_type: 対象商品
-plugin_customer_coupon.admin.label.coupon_member: 利用制限
-plugin_customer_coupon.admin.label.discount_type: 値引き種別
-plugin_customer_coupon.admin.label.discount_type.price: 値引き額
-plugin_customer_coupon.admin.label.discount_type.rate: 値引率
+# plugin_customer_coupon.admin.label.coupon_type: 対象商品
+# plugin_customer_coupon.admin.label.coupon_member: 利用制限
+# plugin_customer_coupon.admin.label.discount_type: 値引き種別
+# plugin_customer_coupon.admin.label.discount_type.price: 値引き額
+# plugin_customer_coupon.admin.label.discount_type.rate: 値引率
 plugin_customer_coupon.admin.label.discount_price: 値引き額(円)
 plugin_customer_coupon.admin.label.discount_rate: 値引率(％)
 plugin_customer_coupon.admin.label.coupon_release: 発行枚数
@@ -54,7 +59,7 @@ plugin_customer_coupon.admin.notfound: クーポンが存在しません。
 plugin_customer_coupon.admin.coupon_id.notexists: クーポンIDがありません。
 plugin_customer_coupon.admin.duplicate: 既に利用されているクーポンコードです。
 plugin_customer_coupon.admin.avaiabledate: 有効期間に誤りがあります。
-plugin_customer_coupon.admin.coupontype: クーポン有効対象となる商品情報またはカテゴリ情報を設定してください。
+# plugin_customer_coupon.admin.coupontype: クーポン有効対象となる商品情報またはカテゴリ情報を設定してください。
 plugin_customer_coupon.admin.regist.success: クーポンを登録しました。
 plugin_customer_coupon.admin.update.success: クーポンを更新しました。
 plugin_customer_coupon.admin.delete.success: クーポンを削除しました。
@@ -62,8 +67,8 @@ plugin_customer_coupon.admin.enable.success: クーポンの状態を変更し�
 plugin_customer_coupon.admin.delete.error: クーポンの削除に失敗しました。
 plugin_customer_coupon.admin.pager.failed: ページング担当者が失敗しました。
 # Order edit
-plugin_customer_coupon.admin.order_edit.header: ご利用クーポンコード
-plugin_customer_coupon.admin.order_edit.body: クーポンコード
+# plugin_customer_coupon.admin.order_edit.header: ご利用クーポンコード
+# plugin_customer_coupon.admin.order_edit.body: クーポンコード
 # front
 # plugin_customer_coupon.front.shopping.notexists: クーポン対象商品はございません。クーポンコードをご確認ください。
 # plugin_customer_coupon.front.shopping.sameuser: このクーポンは既にご利用いただいています。
