@@ -8,7 +8,7 @@ plugin_customer_coupon.admin.index.col03: クーポン名
 # plugin_customer_coupon.admin.index.col04: 種別
 # plugin_customer_coupon.admin.index.col05: 会員のみ
 plugin_customer_coupon.admin.index.col06: 値引き
-# plugin_customer_coupon.admin.index.col07: 残発行枚数
+plugin_customer_coupon.admin.index.col07: 残発行枚数
 plugin_customer_coupon.admin.index.col08: 下限金額
 plugin_customer_coupon.admin.index.col09: 有効期間
 plugin_customer_coupon.admin.index.col10: 編集
@@ -56,6 +56,7 @@ plugin_customer_coupon.admin.duplicate: 既に利用されているクーポン�
 plugin_customer_coupon.admin.avaiabledate: 有効期間に誤りがあります。
 plugin_customer_coupon.admin.coupontype: クーポン有効対象となる商品情報またはカテゴリ情報を設定してください。
 plugin_customer_coupon.admin.regist.success: クーポンを登録しました。
+plugin_customer_coupon.admin.update.success: クーポンを更新しました。
 plugin_customer_coupon.admin.delete.success: クーポンを削除しました。
 plugin_customer_coupon.admin.enable.success: クーポンの状態を変更しました。
 plugin_customer_coupon.admin.delete.error: クーポンの削除に失敗しました。

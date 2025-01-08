@@ -29,8 +29,9 @@
                                 <th>{{ 'plugin_customer_coupon.admin.index.col01'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col02'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col03'|trans }}</th>
-                                <th>{{ 'plugin_customer_coupon.admin.index.col06'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col08'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col06'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.col07'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col10'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col11'|trans }}</th>
                                 <th>{{ 'plugin_customer_coupon.admin.index.col12'|trans }}</th>
@@ -38,17 +39,17 @@
                             </thead>
                             <tbody>
                             {% for Coupon in Coupons %}
-                            <tr class="{% if Coupon.visible == 0 %}active{% endif %}">
+                            <tr class="{% if Coupon.enable_flag == 0 %}active{% endif %}">
                                 <td class="coupon_id">{{ Coupon.id }}</td>
                                 <td class="coupon_cd">{{ Coupon.coupon_cd }}</td>
                                 <td class="coupon_name">{{ Coupon.coupon_name }}</td>
-                                <td class="coupon_discount">{{ Coupon.discount_rate }} %</td>
                                 <td>{{ Coupon.coupon_lower_limit|price }}</td>
-
+                                <td class="coupon_discount">{{ Coupon.discount_rate }} %</td>
+                                <td>{{ Coupon.coupon_use_time|number_format }} / {{ Coupon.coupon_release|number_format }}</td>
                                 <td><a href="{{ url('plugin_customer_coupon_edit', { id: Coupon.id }) }}">{{ 'admin.common.edit'|trans }}</a></td>
                                 <td>
-                                    <a href="{{ url('plugin_coupon_enable', { id: Coupon.id }) }}" {{ csrf_token_for_anchor() }} data-confirm="false" data-method="put">
-                                    {% if Coupon.visible == 1 %}
+                                    <a href="{{ url('plugin_customer_coupon_enable', { id: Coupon.id }) }}" {{ csrf_token_for_anchor() }} data-confirm="false" data-method="put">
+                                    {% if Coupon.enable_flag == 1 %}
                                         {{ 'common.enabled'|trans }}
                                     {% else %}
                                         {{ 'common.disabled'|trans }}
@@ -78,7 +79,7 @@
                                                     <button class="btn btn-ec-sub" type="button"
                                                             data-bs-dismiss="modal">{{ 'common.cancel'|trans }}
                                                     </button>
-                                                    <a href="{{ url('plugin_coupon_delete', {'id' : Coupon.id}) }}" class="btn btn-ec-delete" data-confirm="false" {{ csrf_token_for_anchor() }} data-method="delete">
+                                                    <a href="{{ url('plugin_customer_coupon_delete', {'id' : Coupon.id}) }}" class="btn btn-ec-delete" data-confirm="false" {{ csrf_token_for_anchor() }} data-method="delete">
                                                         {{ 'common.delete'|trans }}
                                                     </a>
                                                 </div>

@@ -13,15 +13,18 @@
 
 namespace Plugin\CustomerCoupon42\Controller\Admin;
 
+use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
-use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
-use Plugin\CustomerCoupon42\Form\Type\Admin\CustomerCouponType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 use Plugin\CustomerCoupon42\Service\CustomerCouponService;
+use Plugin\CustomerCoupon42\Form\Type\Admin\CustomerCouponType;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 
 /**
  * Class CustomerCouponController
@@ -31,7 +34,7 @@ class CustomerCouponController extends AbstractController
     /**
      * @var CustomerCouponRepository
      */
-    private $couponRepository;
+    private $customerCouponReposity;
 
     /**
      * @var CustomerCouponService
@@ -41,11 +44,11 @@ class CustomerCouponController extends AbstractController
     /**
      * CustomerCouponController constructor.
      *
-     * @param CustomerCouponRepository $couponRepository
+     * @param CustomerCouponRepository $customerCouponReposity
      */
-    public function __construct(CustomerCouponRepository $couponRepository, CustomerCouponService $customerCouponService)
+    public function __construct(CustomerCouponRepository $customerCouponReposity, CustomerCouponService $customerCouponService)
     {
-        $this->couponRepository = $couponRepository;
+        $this->customerCouponReposity = $customerCouponReposity;
         $this->customerCouponService = $customerCouponService;
     }
 
@@ -58,7 +61,7 @@ class CustomerCouponController extends AbstractController
      */
     public function index(Request $request)
     {
-        $coupons = $this->couponRepository->findBy(
+        $coupons = $this->customerCouponReposity->findBy(
             ['visible' => true],
             ['id' => 'DESC']
         );
@@ -84,10 +87,11 @@ class CustomerCouponController extends AbstractController
         if (!$id) {
             // 新規登録
             $Coupon = new CustomerCoupon();
+            $Coupon->setEnableFlag(Constant::ENABLED);
             $Coupon->setVisible(true);
         } else {
             // 更新
-            $Coupon = $this->couponRepository->find($id);
+            $Coupon = $this->customerCouponReposity->find($id);
             if (!$Coupon) {
                 $this->addError('plugin_coupon.admin.notfound', 'admin');
 
@@ -106,11 +110,24 @@ class CustomerCouponController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var \Plugin\CustomerCoupon42\Entity\CustomerCoupon $CustomerCoupon */
             $CustomerCoupon = $form->getData();
+            $oldReleaseNumber = $request->get('coupon_release_old');
+            if (is_null($Coupon->getCouponUseTime())) {
+                $Coupon->setCouponUseTime($Coupon->getCouponRelease());
+            } else {
+                if ($Coupon->getCouponRelease() != $oldReleaseNumber) {
+                    $Coupon->setCouponUseTime($Coupon->getCouponRelease());
+                }
+            }
             $this->entityManager->persist($CustomerCoupon);
             $this->entityManager->flush($CustomerCoupon);
 
-            // 成功時のメッセージを登録する
-            $this->addSuccess('plugin_customer_coupon.admin.regist.success', 'admin');
+            if (!$id) {
+                // 成功時のメッセージを登録する
+                $this->addSuccess('plugin_customer_coupon.admin.regist.success', 'admin');
+            } else {
+                // 成功時のメッセージを更新する
+                $this->addSuccess('plugin_customer_coupon.admin.update.success', 'admin');
+            }
 
             return $this->redirectToRoute('plugin_customer_coupon_list');
         }
@@ -119,6 +136,46 @@ class CustomerCouponController extends AbstractController
             'form' => $form->createView(),
             'id' => $id,
         ]);
+    }
+
+    /**
+     * クーポンの有効/無効化
+     *
+     * @param Request $request
+     * @param CustomerCoupon  $Coupon
+     *
+     * @return RedirectResponse
+     * @Route("/%eccube_admin_route%/plugin/customer-coupon/{id}/enable", name="plugin_customer_coupon_enable", requirements={"id" = "\d+"}, methods={"put"})
+     * @ParamConverter("CustomerCoupon")
+     */
+    public function enable(Request $request, CustomerCoupon $Coupon)
+    {
+        $this->isTokenValid();
+        $this->customerCouponReposity->enableCoupon($Coupon);
+        $this->addSuccess('plugin_customer_coupon.admin.enable.success', 'admin');
+        log_info('Change status a coupon with ', ['ID' => $Coupon->getId()]);
+
+        return $this->redirectToRoute('plugin_customer_coupon_list');
+    }
+
+    /**
+     * クーポンの削除
+     *
+     * @param Request $request
+     * @param CustomerCoupon  $Coupon
+     *
+     * @return RedirectResponse
+     * @Route("/%eccube_admin_route%/plugin/customer-coupon/{id}/delete", name="plugin_customer_coupon_delete", requirements={"id" = "\d+"}, methods={"delete"})
+     * @ParamConverter("CustomerCoupon")
+     */
+    public function delete(Request $request, CustomerCoupon $Coupon)
+    {
+        $this->isTokenValid();
+        $this->customerCouponReposity->deleteCoupon($Coupon);
+        $this->addSuccess('plugin_customer_coupon.admin.delete.success', 'admin');
+        log_info('Delete a coupon with ', ['ID' => $Coupon->getId()]);
+
+        return $this->redirectToRoute('plugin_customer_coupon_list');
     }
 
     /**

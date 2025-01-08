@@ -33,4 +33,46 @@ class CustomerCouponRepository extends AbstractRepository
     {
         parent::__construct($registry, CustomerCoupon::class);
     }
+
+    /**
+     * クーポン情報を有効/無効にする.
+     *
+     * @param CustomerCoupon $Coupon
+     *
+     * @return bool
+     */
+    public function enableCoupon(CustomerCoupon $Coupon)
+    {
+        $em = $this->getEntityManager();
+
+        // クーポン情報を書き換える
+        $Coupon->setEnableFlag(!$Coupon->getEnableFlag());
+
+        // クーポン情報を登録する
+        $em->persist($Coupon);
+        $em->flush($Coupon);
+
+        return true;
+    }
+
+    /**
+     * クーポン情報を削除する.
+     *
+     * @param CustomerCoupon $Coupon
+     *
+     * @return bool
+     */
+    public function deleteCoupon(CustomerCoupon $Coupon)
+    {
+        $em = $this->getEntityManager();
+
+        // クーポン情報を書き換える
+        $Coupon->setVisible(false);
+
+        // クーポン情報を登録する
+        $em->persist($Coupon);
+        $em->flush($Coupon);
+
+        return true;
+    }
 }

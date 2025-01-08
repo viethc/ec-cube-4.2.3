@@ -56,9 +56,39 @@ class CustomerCoupon extends AbstractEntity
     /**
      * @var float
      *
+     * @ORM\Column(name="coupon_lower_limit", type="decimal", nullable=true, precision=12, scale=2, options={"unsigned":true,"default":0})
+     */
+    private $coupon_lower_limit;
+
+    /**
+     * @var float
+     *
      * @ORM\Column(name="discount_rate", type="decimal", nullable=true, precision=10, scale=0, options={"unsigned":true,"default":0})
      */
     private $discount_rate;
+
+    /**
+     * The number of coupon release
+     *
+     * @var int
+     *
+     * @ORM\Column(name="coupon_release", type="integer", nullable=false)
+     */
+    private $coupon_release;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="coupon_use_time", type="integer", nullable=true)
+     */
+    private $coupon_use_time;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="enable_flag", type="boolean", nullable=false, options={"default":true})
+     */
+    private $enable_flag;
 
     /**
      * @var boolean
@@ -66,13 +96,6 @@ class CustomerCoupon extends AbstractEntity
      * @ORM\Column(name="visible", type="boolean", options={"default":true})
      */
     private $visible;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="coupon_lower_limit", type="decimal", nullable=true, precision=12, scale=2, options={"unsigned":true,"default":0})
-     */
-    private $coupon_lower_limit;
 
     /**
      * @var \DateTime
@@ -154,6 +177,26 @@ class CustomerCoupon extends AbstractEntity
     }
 
     /**
+     * @return int
+     */
+    public function getCouponLowerLimit()
+    {
+        return $this->coupon_lower_limit;
+    }
+
+    /**
+     * @param int $couponLowerLimit
+     *
+     * @return CustomerCoupon
+     */
+    public function setCouponLowerLimit($couponLowerLimit)
+    {
+        $this->coupon_lower_limit = $couponLowerLimit;
+
+        return $this;
+    }
+
+    /**
      * Set discount_rate.
      *
      * @param string $discountRate
@@ -175,6 +218,74 @@ class CustomerCoupon extends AbstractEntity
     public function getDiscountRate()
     {
         return $this->discount_rate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCouponRelease()
+    {
+        return $this->coupon_release;
+    }
+
+    /**
+     * @param int $coupon_release
+     *
+     * @return CustomerCoupon
+     */
+    public function setCouponRelease($coupon_release)
+    {
+        $this->coupon_release = $coupon_release;
+
+        return $this;
+    }
+
+    /**
+     * Set coupon_use_time.
+     *
+     * @param int $couponUseTime
+     *
+     * @return CustomerCoupon
+     */
+    public function setCouponUseTime($couponUseTime)
+    {
+        $this->coupon_use_time = $couponUseTime;
+
+        return $this;
+    }
+
+    /**
+     * Get coupon_use_time.
+     *
+     * @return int
+     */
+    public function getCouponUseTime()
+    {
+        return $this->coupon_use_time;
+    }
+
+    /**
+     * Set enable_flag.
+     *
+     * @param bool $enableFlag
+     *
+     * @return CustomerCoupon
+     */
+    public function setEnableFlag($enableFlag)
+    {
+        $this->enable_flag = $enableFlag;
+
+        return $this;
+    }
+
+    /**
+     * Get enable_flag.
+     *
+     * @return bool
+     */
+    public function getEnableFlag()
+    {
+        return $this->enable_flag;
     }
 
     /**
@@ -247,25 +358,5 @@ class CustomerCoupon extends AbstractEntity
     public function getUpdateDate()
     {
         return $this->update_date;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCouponLowerLimit()
-    {
-        return $this->coupon_lower_limit;
-    }
-
-    /**
-     * @param int $couponLowerLimit
-     *
-     * @return CustomerCoupon
-     */
-    public function setCouponLowerLimit($couponLowerLimit)
-    {
-        $this->coupon_lower_limit = $couponLowerLimit;
-
-        return $this;
     }
 }

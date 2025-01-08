@@ -106,6 +106,16 @@
                                     <span id="discount_type_rate_description" class="small">{{ 'plugin_customer_coupon.admin.regist.discount_rate.note'|trans }}</span>
                                 </div>
                             </div>
+                            {# 使用回数 #}
+                            <div class="row">
+                                <div class="col-3">{{ form_label(form.coupon_release) }}<span class="badge bg-primary ms-1">{{ 'admin.common.required'|trans }}</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.coupon_release) }}
+                                    {{ form_errors(form.coupon_release) }}
+                                </div>
+                                {{ form_widget(form.coupon_use_time) }}
+                                <input type="hidden" name="coupon_release_old" value="{{ form.vars.value.coupon_release }}">
+                            </div>
                         </div><!-- /.card-body -->
                     </div><!-- /.card -->
                 </div><!-- /.c-primaryCol -->

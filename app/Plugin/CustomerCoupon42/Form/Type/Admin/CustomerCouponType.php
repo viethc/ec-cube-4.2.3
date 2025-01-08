@@ -17,6 +17,7 @@ use Eccube\Form\Type\PriceType;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -109,6 +110,18 @@ class CustomerCouponType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('coupon_release', IntegerType::class, [
+                'label' => 'plugin_customer_coupon.admin.label.coupon_release',
+                'required' => true,
+                'constraints' => [
+                    new Assert\NotBlank(),
+                    new Assert\Range([
+                        'min' => 1,
+                        'max' => 1000000,
+                    ]),
+                ],
+            ])
+            ->add('coupon_use_time', HiddenType::class, [])
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
                 $data = $form->getData();
