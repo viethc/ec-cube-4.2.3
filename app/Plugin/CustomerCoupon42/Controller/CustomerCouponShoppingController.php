@@ -13,11 +13,13 @@
 
 namespace Plugin\CustomerCoupon42\Controller;
 
+use Eccube\Event\EventArgs;
+use Eccube\Event\EccubeEvents;
 use Eccube\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 
 /**
  * Class CustomerCouponShoppingController
@@ -42,8 +44,7 @@ class CustomerCouponShoppingController extends AbstractController
     /**
      * @param Request $request
      *
-     * @return array
-     * @Route("/mypage/mycoupon", name="mypage_mycoupon")
+     * @Route("/mypage/mycoupon", name="plugin_customer_coupon_shopping", methods={"GET"})
      * @Template("@CustomerCoupon42/default/mypage_mycoupon.twig")
      */
     public function mycoupon(Request $request)
@@ -53,7 +54,6 @@ class CustomerCouponShoppingController extends AbstractController
         //     ['id' => 'DESC']
         // );
 
-        return [
-        ];
+        return [];
     }
 }

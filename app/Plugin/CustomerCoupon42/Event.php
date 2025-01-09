@@ -19,6 +19,7 @@ class Event implements EventSubscriberInterface
             'Mypage/change.twig' => 'onRenderMypageNav',
             'Mypage/delivery.twig' => 'onRenderMypageNav',
             'Mypage/withdraw.twig' => 'onRenderMypageNav',
+            '@CustomerCoupon42/default/mypage_mycoupon.twig' => 'onRenderMypageNav',
         ];
     }
 
