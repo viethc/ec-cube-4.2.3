@@ -44,7 +44,7 @@ class CustomerCouponShoppingController extends AbstractController
     /**
      * @param Request $request
      *
-     * @Route("/mypage/mycoupon", name="plugin_customer_coupon_shopping", methods={"GET"})
+     * @Route("/mypage/mycoupon", name="plugin_customer_coupon_shopping")
      * @Template("@CustomerCoupon42/default/mypage_mycoupon.twig")
      */
     public function mycoupon(Request $request)

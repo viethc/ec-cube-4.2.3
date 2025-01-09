@@ -34,7 +34,6 @@ final class Version20250107022200 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN plg_customer_coupon.available_to_date IS \'(DC2Type:datetimetz)\'');
         $this->addSql('COMMENT ON COLUMN plg_customer_coupon.create_date IS \'(DC2Type:datetimetz)\'');
         $this->addSql('COMMENT ON COLUMN plg_customer_coupon.update_date IS \'(DC2Type:datetimetz)\'');
-        $this->addSql('DROP TABLE mtb_pref');
         $this->addSql('ALTER TABLE dtb_base_info DROP site_kit_site_id');
         $this->addSql('ALTER TABLE dtb_base_info DROP site_kit_site_secret');
         $this->addSql('ALTER TABLE dtb_customer DROP plg_mailmagazine_flg');
@@ -44,7 +43,6 @@ final class Version20250107022200 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('CREATE TABLE mtb_pref (id SMALLINT NOT NULL, name VARCHAR(255) NOT NULL, sort_no SMALLINT NOT NULL, discriminator_type VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('DROP TABLE plg_customer_coupon');
         $this->addSql('ALTER TABLE dtb_customer ADD plg_mailmagazine_flg SMALLINT DEFAULT 0');
         $this->addSql('ALTER TABLE dtb_base_info ADD site_kit_site_id VARCHAR(255) DEFAULT NULL');
