@@ -66,6 +66,9 @@ plugin_customer_coupon.admin.delete.success: クーポンを削除しました�
 plugin_customer_coupon.admin.enable.success: クーポンの状態を変更しました。
 plugin_customer_coupon.admin.delete.error: クーポンの削除に失敗しました。
 plugin_customer_coupon.admin.pager.failed: ページング担当者が失敗しました。
+# Cart notice
+plugin_customer_coupon.cart.notice.current: <strong>おめでとうございます。</strong><br>この注文が完了しました後、値引き率の<strong>%coupon_rate%%</strong>でクーポンをお贈りします。
+plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</strong>でクーポンを受けるため、支払い或いは<strong>%price%円</strong>の買い物を続けてください。
 # Order edit
 # plugin_customer_coupon.admin.order_edit.header: ご利用クーポンコード
 # plugin_customer_coupon.admin.order_edit.body: クーポンコード

@@ -2,11 +2,28 @@
 
 namespace Plugin\CustomerCoupon42;
 
+use Eccube\Entity\Order;
 use Eccube\Event\TemplateEvent;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class Event implements EventSubscriberInterface
 {
+    /**
+     * @var CustomerCouponRepository
+     */
+    private $customerCouponRepository;
+
+    /**
+     * Event constructor.
+     *
+     * @param CustomerCouponRepository $customerCouponRepository
+     */
+    public function __construct(CustomerCouponRepository $customerCouponRepository)
+    {
+        $this->customerCouponRepository = $customerCouponRepository;
+    }
+
     /**
      * @return array
      */
@@ -20,6 +37,7 @@ class Event implements EventSubscriberInterface
             'Mypage/delivery.twig' => 'onRenderMypageNav',
             'Mypage/withdraw.twig' => 'onRenderMypageNav',
             '@CustomerCoupon42/default/mypage_mycoupon.twig' => 'onRenderMypageNav',
+            'Cart/index.twig' => 'onRenderCartNotice',
         ];
     }
 
@@ -31,5 +49,29 @@ class Event implements EventSubscriberInterface
     public function onRenderMypageNav(TemplateEvent $event)
     {
         $event->addSnippet('@CustomerCoupon42/default/mypage_mycoupon_nav.twig');
+    }
+
+    /**
+     * Hiển thị thông báo khi có coupon
+     * Dựa trên giá trị đơn hàng, thông báo giá trị coupon sẽ nhận được khi hoàn tất đơn hàng
+     *
+     * @param TemplateEvent $event
+     */
+    public function onRenderCartNotice(TemplateEvent $event)
+    {
+        $parameters = $event->getParameters();
+
+        $totalPrice = $parameters['totalPrice'];
+
+        $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
+        $parameters['CurrentCoupon'] = $CurrentCoupon;
+
+        $NextCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice, 'ASC');
+        $parameters['NextCoupon'] = $NextCoupon;
+
+        // set parameter for twig files
+        $event->setParameters($parameters);
+
+        $event->addSnippet('@CustomerCoupon42/default/cart_notice.twig');
     }
 }

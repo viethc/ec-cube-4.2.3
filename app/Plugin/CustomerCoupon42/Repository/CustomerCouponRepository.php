@@ -75,4 +75,34 @@ class CustomerCouponRepository extends AbstractRepository
 
         return true;
     }
+
+    public function findOneActiveCoupon($totalPrice = 0, $order = 'DESC')
+    {
+        $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
+
+        // クーポンコード有効
+        $qb->andWhere('c.enable_flag = :enable_flag')
+            ->setParameter('enable_flag', Constant::ENABLED);
+
+        // 
+        $qb->andWhere('c.coupon_use_time > 0');
+
+        //
+        if ($totalPrice > 0) {
+            if ($order == 'DESC') {
+                $qb->andWhere('c.coupon_lower_limit <= :total_price')
+                    ->setParameter('total_price', $totalPrice)
+                    ->orderBy('c.coupon_lower_limit', $order);
+            } else {
+                $qb->andWhere('c.coupon_lower_limit >= :total_price')
+                ->setParameter('total_price', $totalPrice)
+                ->orderBy('c.coupon_lower_limit', $order);
+            }
+        }
+
+        // LIMIT 1
+        $qb->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }
