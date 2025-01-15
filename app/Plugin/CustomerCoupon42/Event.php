@@ -40,6 +40,8 @@ class Event implements EventSubscriberInterface
 
             'Cart/index.twig' => 'onRenderCartNotice',
             'Shopping/index.twig' => 'onRenderShopping',
+            'Shopping/confirm.twig' => 'onRenderShopping',
+            'Shopping/complete.twig' => 'onRenderShoppingComplete',
         ];
     }
 
@@ -82,9 +84,18 @@ class Event implements EventSubscriberInterface
         $parameters = $event->getParameters();
         
         if (strpos($event->getView(), 'index.twig') !== false) {
-            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_item.twig');
+            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_index.twig');
         } else {
-            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_item_confirm.twig');
+            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_confirm.twig');
         }
+    }
+
+    public function onRenderShoppingComplete(TemplateEvent $event)
+    {
+        log_info("[INFO] Plugin\CustomerCoupon42\Event::onRenderShoppingComplete -> BEGIN");
+        $parameters = $event->getParameters();
+        
+        // dd($parameters);
+        log_info("[INFO] Plugin\CustomerCoupon42\Event::onRenderShoppingComplete -> END");
     }
 }

@@ -3,7 +3,7 @@ plugin_customer_coupon.admin.index.title: クーポン一覧管理
 plugin_customer_coupon.admin.index.subtitle: クーポン内容設定
 plugin_customer_coupon.admin.order.index.title: 顧客のクーポン一覧
 plugin_customer_coupon.admin.order.index.subtitle: 最小金額による割引率
-plugin_customer_coupon.admin.index.number: <strong>%number% 件</strong> が該当しました
+plugin_customer_coupon.admin.index.number: <strong>%number% 件</strong>が該当しました
 plugin_customer_coupon.admin.index.col01: クーポンID
 plugin_customer_coupon.admin.index.col02: クーポンコード
 plugin_customer_coupon.admin.index.col03: クーポン名
@@ -82,7 +82,7 @@ plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</
 # plugin_customer_coupon.front.shopping.lowerlimit: このクーポンを利用するためには、対象商品をlowerLimit円以上購入してください。
 # plugin_customer_coupon.front.shopping.changeorder: 注文内容が変更になりました。クーポンをご利用の場合は再度設定をお願いいたします。
 # plugin_customer_coupon.front.shopping.notfound: このクーポンコードは利用できません。
-plugin_customer_coupon.front.shopping.header: 顧客のクーポン
+plugin_customer_coupon.front.shopping.header: マイクーポン
 # plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
 plugin_customer_coupon.front.shopping.message.empty: クーポンが存在していません。クーポンを所有するために、買い物を続けてください。
 # plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更する

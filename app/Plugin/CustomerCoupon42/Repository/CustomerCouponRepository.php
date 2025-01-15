@@ -76,6 +76,17 @@ class CustomerCouponRepository extends AbstractRepository
         return true;
     }
 
+    public function findByActiveCoupon()
+    {
+        $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
+
+        $qb->andWhere('c.enable_flag = :enable_flag')->setParameter('enable_flag', Constant::ENABLED);
+        $qb->andWhere('c.coupon_use_time > 0');
+        $qb->orderBy('c.coupon_lower_limit');
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function findOneActiveCoupon($totalPrice = 0, $order = 'DESC')
     {
         $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
