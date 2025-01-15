@@ -83,23 +83,23 @@ class CustomerCouponController extends AbstractController
      */
     public function edit(Request $request, $id = null)
     {
-        $Coupon = null;
+        $CustomerCoupon = null;
         if (!$id) {
             // 新規登録
-            $Coupon = new CustomerCoupon();
-            $Coupon->setEnableFlag(Constant::ENABLED);
-            $Coupon->setVisible(true);
+            $CustomerCoupon = new CustomerCoupon();
+            $CustomerCoupon->setEnableFlag(Constant::ENABLED);
+            $CustomerCoupon->setVisible(true);
         } else {
             // 更新
-            $Coupon = $this->customerCouponReposity->find($id);
-            if (!$Coupon) {
+            $CustomerCoupon = $this->customerCouponReposity->find($id);
+            if (!$CustomerCoupon) {
                 $this->addError('plugin_coupon.admin.notfound', 'admin');
 
                 return $this->redirectToRoute('plugin_customer_coupon_list');
             }
         }
 
-        $form = $this->formFactory->createBuilder(CustomerCouponType::class, $Coupon)->getForm();
+        $form = $this->formFactory->createBuilder(CustomerCouponType::class, $CustomerCoupon)->getForm();
 
         // クーポンコードの発行
         if (!$id) {
@@ -111,15 +111,15 @@ class CustomerCouponController extends AbstractController
             /** @var \Plugin\CustomerCoupon42\Entity\CustomerCoupon $CustomerCoupon */
             $CustomerCoupon = $form->getData();
             $oldReleaseNumber = $request->get('coupon_release_old');
-            if (is_null($Coupon->getCouponUseTime())) {
-                $Coupon->setCouponUseTime($Coupon->getCouponRelease());
+            if (is_null($CustomerCoupon->getCouponUseTime())) {
+                $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponRelease());
             } else {
-                if ($Coupon->getCouponRelease() != $oldReleaseNumber) {
-                    $Coupon->setCouponUseTime($Coupon->getCouponRelease());
+                if ($CustomerCoupon->getCouponRelease() != $oldReleaseNumber) {
+                    $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponRelease());
                 }
             }
             $this->entityManager->persist($CustomerCoupon);
-            $this->entityManager->flush($CustomerCoupon);
+            $this->entityManager->flush();
 
             if (!$id) {
                 // 成功時のメッセージを登録する

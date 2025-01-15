@@ -82,9 +82,9 @@ plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</
 # plugin_customer_coupon.front.shopping.lowerlimit: このクーポンを利用するためには、対象商品をlowerLimit円以上購入してください。
 # plugin_customer_coupon.front.shopping.changeorder: 注文内容が変更になりました。クーポンをご利用の場合は再度設定をお願いいたします。
 # plugin_customer_coupon.front.shopping.notfound: このクーポンコードは利用できません。
-# plugin_customer_coupon.front.shopping.header: クーポン
+plugin_customer_coupon.front.shopping.header: 顧客のクーポン
 # plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
-# plugin_customer_coupon.front.shopping.message.empty: クーポンをお持ちの方はクーポンコードを入力してください。
+plugin_customer_coupon.front.shopping.message.empty: クーポンが存在していません。クーポンを所有するために、買い物を続けてください。
 # plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更する
 # plugin_customer_coupon.front.shopping_coupon.header: クーポンコードの入力
 # plugin_customer_coupon.front.shopping_coupon.body: 利用するクーポンコードを入力してください。

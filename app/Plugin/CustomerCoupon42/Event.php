@@ -37,7 +37,9 @@ class Event implements EventSubscriberInterface
             'Mypage/delivery.twig' => 'onRenderMypageNav',
             'Mypage/withdraw.twig' => 'onRenderMypageNav',
             '@CustomerCoupon42/default/mypage_mycoupon.twig' => 'onRenderMypageNav',
+
             'Cart/index.twig' => 'onRenderCartNotice',
+            'Shopping/index.twig' => 'onRenderShopping',
         ];
     }
 
@@ -73,5 +75,16 @@ class Event implements EventSubscriberInterface
         $event->setParameters($parameters);
 
         $event->addSnippet('@CustomerCoupon42/default/cart_notice.twig');
+    }
+
+    public function onRenderShopping(TemplateEvent $event)
+    {
+        $parameters = $event->getParameters();
+        
+        if (strpos($event->getView(), 'index.twig') !== false) {
+            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_item.twig');
+        } else {
+            $event->addSnippet('@CustomerCoupon42/default/customer_coupon_shopping_item_confirm.twig');
+        }
     }
 }

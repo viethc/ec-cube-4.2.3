@@ -87,7 +87,7 @@ class CustomerCouponType extends AbstractType
                 'required' => true,
                 'trim' => true,
                 'constraints' => [
-                    new Assert\NotBlank(),
+                    new Assert\NotBlank([]),
                 ],
             ])
             ->add('coupon_lower_limit', PriceType::class, [
