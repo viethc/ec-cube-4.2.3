@@ -142,18 +142,18 @@ class CustomerCouponController extends AbstractController
      * クーポンの有効/無効化
      *
      * @param Request $request
-     * @param CustomerCoupon  $Coupon
+     * @param CustomerCoupon  $CustomerCoupon
      *
      * @return RedirectResponse
      * @Route("/%eccube_admin_route%/plugin/customer-coupon/{id}/enable", name="plugin_customer_coupon_enable", requirements={"id" = "\d+"}, methods={"put"})
      * @ParamConverter("CustomerCoupon")
      */
-    public function enable(Request $request, CustomerCoupon $Coupon)
+    public function enable(Request $request, CustomerCoupon $CustomerCoupon)
     {
         $this->isTokenValid();
-        $this->customerCouponReposity->enableCoupon($Coupon);
+        $this->customerCouponReposity->enableCoupon($CustomerCoupon);
         $this->addSuccess('plugin_customer_coupon.admin.enable.success', 'admin');
-        log_info('Change status a coupon with ', ['ID' => $Coupon->getId()]);
+        log_info('Change status a coupon with ', ['ID' => $CustomerCoupon->getId()]);
 
         return $this->redirectToRoute('plugin_customer_coupon_list');
     }
@@ -162,18 +162,18 @@ class CustomerCouponController extends AbstractController
      * クーポンの削除
      *
      * @param Request $request
-     * @param CustomerCoupon  $Coupon
+     * @param CustomerCoupon  $CustomerCoupon
      *
      * @return RedirectResponse
      * @Route("/%eccube_admin_route%/plugin/customer-coupon/{id}/delete", name="plugin_customer_coupon_delete", requirements={"id" = "\d+"}, methods={"delete"})
      * @ParamConverter("CustomerCoupon")
      */
-    public function delete(Request $request, CustomerCoupon $Coupon)
+    public function delete(Request $request, CustomerCoupon $CustomerCoupon)
     {
         $this->isTokenValid();
-        $this->customerCouponReposity->deleteCoupon($Coupon);
+        $this->customerCouponReposity->deleteCoupon($CustomerCoupon);
         $this->addSuccess('plugin_customer_coupon.admin.delete.success', 'admin');
-        log_info('Delete a coupon with ', ['ID' => $Coupon->getId()]);
+        log_info('Delete a coupon with ', ['ID' => $CustomerCoupon->getId()]);
 
         return $this->redirectToRoute('plugin_customer_coupon_list');
     }

@@ -186,15 +186,35 @@ class CustomerCouponOrder extends AbstractEntity
     }
 
     /**
-     * Set user_id.
+     * @return string
+     */
+    public function getCouponName()
+    {
+        return $this->coupon_name;
+    }
+
+    /**
+     * @param string $coupon_name
      *
-     * @param int $userId
+     * @return $this
+     */
+    public function setCouponName($coupon_name)
+    {
+        $this->coupon_name = $coupon_name;
+
+        return $this;
+    }
+
+    /**
+     * Set customer_id.
+     *
+     * @param int $customerId
      *
      * @return CustomerCouponOrder
      */
-    public function setUserId($userId)
+    public function setCustomerId($customerId)
     {
-        $this->user_id = $userId;
+        $this->customer_id = $customerId;
 
         return $this;
     }
@@ -423,25 +443,5 @@ class CustomerCouponOrder extends AbstractEntity
     public function getUpdateDate()
     {
         return $this->update_date;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCouponName()
-    {
-        return $this->coupon_name;
-    }
-
-    /**
-     * @param string $coupon_name
-     *
-     * @return $this
-     */
-    public function setCouponName($coupon_name)
-    {
-        $this->coupon_name = $coupon_name;
-
-        return $this;
     }
 }

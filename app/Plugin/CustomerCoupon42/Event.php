@@ -4,11 +4,21 @@ namespace Plugin\CustomerCoupon42;
 
 use Eccube\Entity\Order;
 use Eccube\Event\TemplateEvent;
-use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Eccube\Entity\Customer;
+use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
+use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
+use Symfony\Component\Workflow\Event\Event as CompletedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 
 class Event implements EventSubscriberInterface
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
     /**
      * @var CustomerCouponRepository
      */
@@ -17,10 +27,14 @@ class Event implements EventSubscriberInterface
     /**
      * Event constructor.
      *
+     * @param EntityManagerInterface $entityManager
      * @param CustomerCouponRepository $customerCouponRepository
      */
-    public function __construct(CustomerCouponRepository $customerCouponRepository)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        CustomerCouponRepository $customerCouponRepository
+    ) {
+        $this->entityManager = $entityManager;
         $this->customerCouponRepository = $customerCouponRepository;
     }
 
@@ -41,7 +55,8 @@ class Event implements EventSubscriberInterface
             'Cart/index.twig' => 'onRenderCartNotice',
             'Shopping/index.twig' => 'onRenderShopping',
             'Shopping/confirm.twig' => 'onRenderShopping',
-            'Shopping/complete.twig' => 'onRenderShoppingComplete',
+
+            'workflow.order.completed' => 'onOrderStateCompleted',
         ];
     }
 
@@ -90,12 +105,44 @@ class Event implements EventSubscriberInterface
         }
     }
 
-    public function onRenderShoppingComplete(TemplateEvent $event)
+    public function onOrderStateCompleted(CompletedEvent $event): void
     {
-        log_info("[INFO] Plugin\CustomerCoupon42\Event::onRenderShoppingComplete -> BEGIN");
-        $parameters = $event->getParameters();
-        
-        // dd($parameters);
-        log_info("[INFO] Plugin\CustomerCoupon42\Event::onRenderShoppingComplete -> END");
+        /** @var $context OrderStateMachineContext */
+        $context = $event->getSubject();
+        /** @var Order $Order */
+        $Order = $context->getOrder();
+        /** @var Customer $Customer */
+        $Customer = $Order->getCustomer();
+
+        $totalPrice = $Order->getSubtotal();
+
+        /**
+         * @var CustomerCoupon $CurrentCoupon
+         */
+        $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
+
+        if ($CurrentCoupon) {
+            $currenDateTime = new \DateTime();
+            $fromDate = $currenDateTime->add(new \DateInterval('P1D'));
+            $toDate = $currenDateTime->add(new \DateInterval('P30D'));
+
+            // 時分秒を0に設定する
+            $currenDateTime->setTime(0, 0, 0);
+
+            /** @var CustomerCouponOrder $CustomerCouponOrder */
+            $CustomerCouponOrder = new CustomerCouponOrder();
+            $CustomerCouponOrder->setCouponId($CurrentCoupon->getId());
+            $CustomerCouponOrder->setCouponCd($CurrentCoupon->getCouponCd());
+            $CustomerCouponOrder->setCouponName($CurrentCoupon->getCouponName());
+            $CustomerCouponOrder->setCustomerId($Customer->getId());
+            $CustomerCouponOrder->setEmail($Customer->getEmail());
+            $CustomerCouponOrder->setOrderId($Order->getId());
+            $CustomerCouponOrder->setAvailableFromDate($fromDate);
+            $CustomerCouponOrder->setAvailableToDate($toDate);
+            $CustomerCouponOrder->setVisible(true);
+
+            $this->entityManager->persist($CustomerCouponOrder);
+            $this->entityManager->flush();
+        }
     }
 }
