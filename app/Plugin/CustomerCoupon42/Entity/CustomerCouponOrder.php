@@ -30,7 +30,7 @@ class CustomerCouponOrder extends AbstractEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="coupon_order_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -58,6 +58,20 @@ class CustomerCouponOrder extends AbstractEntity
     private $coupon_name;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="coupon_lower_limit", type="decimal", nullable=true, precision=12, scale=2, options={"unsigned":true,"default":0})
+     */
+    private $coupon_lower_limit;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="discount_rate", type="decimal", nullable=true, precision=10, scale=0, options={"unsigned":true,"default":0})
+     */
+    private $discount_rate;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="customer_id", type="integer", options={"unsigned":true}, nullable=true)
@@ -67,9 +81,9 @@ class CustomerCouponOrder extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     * @ORM\Column(name="customer_email", type="string", length=255, nullable=true)
      */
-    private $email;
+    private $customer_email;
 
     /**
      * @var int
@@ -112,6 +126,13 @@ class CustomerCouponOrder extends AbstractEntity
      * @ORM\Column(name="visible", type="boolean", options={"default":true})
      */
     private $visible;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="note", type="string", length=1024, nullable=true)
+     */
+    private $note;
 
     /**
      * @var \DateTime
@@ -206,6 +227,50 @@ class CustomerCouponOrder extends AbstractEntity
     }
 
     /**
+     * @return int
+     */
+    public function getCouponLowerLimit()
+    {
+        return $this->coupon_lower_limit;
+    }
+
+    /**
+     * @param int $couponLowerLimit
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setCouponLowerLimit($couponLowerLimit)
+    {
+        $this->coupon_lower_limit = $couponLowerLimit;
+
+        return $this;
+    }
+
+    /**
+     * Set discount_rate.
+     *
+     * @param string $discountRate
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setDiscountRate($discountRate)
+    {
+        $this->discount_rate = $discountRate;
+
+        return $this;
+    }
+
+    /**
+     * Get discount_rate.
+     *
+     * @return string
+     */
+    public function getDiscountRate()
+    {
+        return $this->discount_rate;
+    }
+
+    /**
      * Set customer_id.
      *
      * @param int $customerId
@@ -230,27 +295,27 @@ class CustomerCouponOrder extends AbstractEntity
     }
 
     /**
-     * Set email.
+     * Set customer_email.
      *
-     * @param string $email
+     * @param string $customer_email
      *
      * @return CustomerCouponOrder
      */
-    public function setEmail($email)
+    public function setCustomerEmail($customer_email)
     {
-        $this->email = $email;
+        $this->customer_email = $customer_email;
 
         return $this;
     }
 
     /**
-     * Get email.
+     * Get customer_email.
      *
      * @return string
      */
-    public function getEmail()
+    public function getCustomerEmail()
     {
-        return $this->email;
+        return $this->customer_email;
     }
 
     /**
@@ -299,6 +364,30 @@ class CustomerCouponOrder extends AbstractEntity
     public function getDiscount()
     {
         return $this->discount;
+    }
+
+    /**
+     * Set note.
+     *
+     * @param string $note
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get note.
+     *
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
     }
 
     /**

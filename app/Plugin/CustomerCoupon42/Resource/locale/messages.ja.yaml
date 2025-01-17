@@ -4,19 +4,20 @@ plugin_customer_coupon.admin.index.subtitle: クーポン内容設定
 plugin_customer_coupon.admin.order.index.title: 顧客のクーポン一覧
 plugin_customer_coupon.admin.order.index.subtitle: 最小金額による割引率
 plugin_customer_coupon.admin.index.number: <strong>%number% 件</strong>が該当しました
-plugin_customer_coupon.admin.index.col01: クーポンID
-plugin_customer_coupon.admin.index.col02: クーポンコード
-plugin_customer_coupon.admin.index.col03: クーポン名
-plugin_customer_coupon.admin.order.index.col04: 顧客
-plugin_customer_coupon.admin.order.index.col05: 顧客のメール
-plugin_customer_coupon.admin.index.col06: 値引き
-plugin_customer_coupon.admin.index.col07: 残発行枚数
-plugin_customer_coupon.admin.index.col08: 下限金額
-plugin_customer_coupon.admin.index.col09: 有効期間
-plugin_customer_coupon.admin.index.col10: 編集
-plugin_customer_coupon.admin.index.col11: 状態
-plugin_customer_coupon.admin.index.col12: 削除
-plugin_customer_coupon.admin.order.index.col13: 使用時間
+plugin_customer_coupon.admin.index.seq: ID
+plugin_customer_coupon.admin.index.coupon_id: クーポンID
+plugin_customer_coupon.admin.index.coupon_cd: クーポンコード
+plugin_customer_coupon.admin.index.coupon_name: クーポン名
+plugin_customer_coupon.admin.index.customer_id: 顧客ＩＤ
+plugin_customer_coupon.admin.index.customer_email: 顧客のメール
+plugin_customer_coupon.admin.index.discount: 値引き
+plugin_customer_coupon.admin.index.num_of_remain: 残発行枚数
+plugin_customer_coupon.admin.index.lowest_price: 下限金額
+plugin_customer_coupon.admin.index.period: 有効期間
+plugin_customer_coupon.admin.index.edit: 編集
+plugin_customer_coupon.admin.index.status: 状態
+plugin_customer_coupon.admin.index.delete: 削除
+plugin_customer_coupon.admin.index.usage_time: 使用時間
 plugin_customer_coupon.admin.index.delete__confirm_title: クーポンを削除します
 plugin_customer_coupon.admin.index.delete__confirm_message: クーポンを削除してよろしいですか？
 plugin_customer_coupon.admin.coupon_member.yes: 会員のみ
@@ -93,5 +94,11 @@ plugin_customer_coupon.front.shopping.message.empty: クーポンが存在して
 # plugin_customer_coupon.front.shopping.conflictpoint: クーポンとポイントの併用はできません。
 # plugin_customer_coupon.front.mypage.header: ご利用クーポンコード
 # plugin_customer_coupon.front.mypage.body: クーポンコード
-# plugin_customer_coupon.front.code: クーポンコード
+plugin_customer_coupon.front.coupon_cd: クーポンコード
+plugin_customer_coupon.front.discount: 値引き
+
+plugin_customer_coupon.front.status: 状態
+plugin_customer_coupon.front.usage_time: 使用時間
+plugin_customer_coupon.front.use_status.yes: 使用済
+plugin_customer_coupon.front.use_status.no: 未使用
 

@@ -49,11 +49,13 @@ class CustomerCouponShoppingController extends AbstractController
      */
     public function mycoupon(Request $request)
     {
-        // $couponsOrder = $this->customerCouponOrderReposity->findBy(
-        //     ['visible' => true],
-        //     ['id' => 'DESC']
-        // );
+        $couponsOrder = $this->customerCouponOrderReposity->findBy(
+            ['visible' => true],
+            ['id' => 'DESC']
+        );
 
-        return [];
+        return [
+            'CouponsOrder' => $couponsOrder,
+        ];
     }
 }

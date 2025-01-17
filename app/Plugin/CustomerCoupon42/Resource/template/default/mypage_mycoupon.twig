@@ -24,7 +24,44 @@ file that was distributed with this source code.
         </div>
 
         <div class="ec-mypageRole">
-            
+            {% if CouponsOrder|length > 0 %}
+                <p class="ec-para-normal">{{ '%count%件のクーポンがあります'|trans({'%count%':CouponsOrder|length }) }}</p>
+                {% for Coupon in CouponsOrder %}
+                    <div class="ec-historyRole">
+                        <div class="ec-historyRole__contents">
+                            <div class="ec-historyRole__header">
+                                <div class="ec-historyListHeader">
+                                    <p class="ec-historyListHeader__date">{{ Coupon.coupon_name }}</p>
+                                    <dl class="ec-definitions">
+                                        <dt>{{ 'plugin_customer_coupon.front.coupon_cd'|trans }}：</dt>
+                                        <dd>{{ Coupon.coupon_cd }}</dd>
+                                    </dl>
+                                    <dl class="ec-definitions">
+                                        <dt>{{ 'plugin_customer_coupon.front.discount'|trans }}：</dt>
+                                        <dd>{{ Coupon.discount_rate }}%</dd>
+                                    </dl>
+                                    <dl class="ec-definitions">
+                                        <dt>{{ 'plugin_customer_coupon.front.usage_time'|trans }}：</dt>
+                                        <dd>{{ Coupon.available_from_date|date_format }} ～ {{ Coupon.available_to_date|date_format }}</dd>
+                                    </dl>
+                                    <dl class="ec-definitions">
+                                        <dt>{{ 'plugin_customer_coupon.front.status'|trans }}：</dt>
+                                        <dd>
+                                        {% if Coupon.date_of_use %}
+                                            <span class="text-secondary">{{ 'plugin_customer_coupon.front.use_status.yes'|trans }}</span>
+                                        {% else %}
+                                            <span class="text-success">{{ 'plugin_customer_coupon.front.use_status.no'|trans }}</span>
+                                        {% endif %}
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="ec-para-normal">{{ 'plugin_customer_coupon.front.shopping.message.empty'|trans }}</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

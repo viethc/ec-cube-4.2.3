@@ -122,20 +122,22 @@ class Event implements EventSubscriberInterface
         $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
 
         if ($CurrentCoupon) {
-            $currenDateTime = new \DateTime();
-            $fromDate = $currenDateTime->add(new \DateInterval('P1D'));
-            $toDate = $currenDateTime->add(new \DateInterval('P30D'));
+            $currentDateTime = new \DateTime();
 
             // 時分秒を0に設定する
-            $currenDateTime->setTime(0, 0, 0);
+            $currentDateTime->setTime(0, 0, 0);
+            $fromDate = (clone $currentDateTime)->add(new \DateInterval('P1D'));
+            $toDate = (clone $currentDateTime)->add(new \DateInterval('P30D'));
 
             /** @var CustomerCouponOrder $CustomerCouponOrder */
             $CustomerCouponOrder = new CustomerCouponOrder();
             $CustomerCouponOrder->setCouponId($CurrentCoupon->getId());
             $CustomerCouponOrder->setCouponCd($CurrentCoupon->getCouponCd());
             $CustomerCouponOrder->setCouponName($CurrentCoupon->getCouponName());
+            $CustomerCouponOrder->setCouponLowerLimit($CurrentCoupon->getCouponLowerLimit());
+            $CustomerCouponOrder->setDiscountRate($CurrentCoupon->getDiscountRate());
             $CustomerCouponOrder->setCustomerId($Customer->getId());
-            $CustomerCouponOrder->setEmail($Customer->getEmail());
+            $CustomerCouponOrder->setCustomerEmail($Customer->getEmail());
             $CustomerCouponOrder->setOrderId($Order->getId());
             $CustomerCouponOrder->setAvailableFromDate($fromDate);
             $CustomerCouponOrder->setAvailableToDate($toDate);
