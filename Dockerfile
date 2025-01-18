@@ -1,7 +1,7 @@
 ARG TAG=7.4-apache-bullseye
 FROM php:${TAG}
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
 RUN apt update \
   && apt upgrade -y \

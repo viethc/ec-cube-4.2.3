@@ -88,7 +88,6 @@ services:
         arguments:
             - #
                 - '@Eccube\Service\PurchaseFlow\Processor\PointProcessor' # ポイント明細の追加
-                - '@Customize\Service\PurchaseFlow\Processor\RegionalDiscountProcessor'  # Giảm giá theo khu vực
 
     eccube.purchase.flow.shopping.holder_post_validators:
         class: Doctrine\Common\Collections\ArrayCollection

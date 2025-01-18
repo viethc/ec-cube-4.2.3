@@ -2,7 +2,7 @@
 Learning EC-CUBE version 4.2.3
 
 ## Run docker
-`docker-compose -f docker-compose.yml -f docker-compose.pgsql.yml -f docker-compose.pgadmin.yml -f docker-compose.dev.yml up -d`
+`docker compose -f docker-compose.yml -f docker-compose.pgsql.yml -f docker-compose.pgadmin.yml -f docker-compose.dev.yml up -d`
 
 ## Xóa tất cả container đã dừng và tất cả các image không sử dụng:
 `docker system prune -a`
