@@ -22,6 +22,7 @@ services:
     ## docker tag ec-cube ghcr.io/ec-cube/ec-cube-php:8.1-apache
     # image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-ec-cube/ec-cube-php}:${TAG:-8.1-apache}
     image: ec-cube
+    container_name: ec-cube-4.2.3
     ports:
       - 8080:80
       - 4430:443
