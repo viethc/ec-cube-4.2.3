@@ -1,0 +1,20 @@
+{#
+ This file is part of the Customer Coupon plugin
+
+ Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+ http://www.ec-cube.co.jp/
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+#}
+<script type="text/javascript">
+    $(function () {
+        // append to layout
+        $('ul.ec-navlistRole__navlist li:nth-child(2)').before($("li.mycoupon").detach());
+    })
+</script>
+
+{# クーポン情報 #}
+<li class="ec-navlistRole__item mycoupon {% if mypageno|default('') == 'mycoupon' %}active{% endif %}">
+    <a href="{{ url('plugin_customer_coupon_shopping') }}">{{ 'マイクーポン'|trans }}</a>
+</li>

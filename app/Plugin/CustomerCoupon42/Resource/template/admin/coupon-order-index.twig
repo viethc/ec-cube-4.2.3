@@ -1,0 +1,72 @@
+{#
+ This file is part of the Coupon plugin
+
+ Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+ http://www.ec-cube.co.jp/
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['order', 'plugin_customer_coupon_order'] %}
+
+{% block title %}{{ 'plugin_customer_coupon.admin.order.index.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'plugin_customer_coupon.admin.order.index.subtitle'|trans }}{% endblock %}
+
+{% block main %}
+<form name="search_form" id="search_form" method="post" action="">
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span class="normal">{{ 'plugin_customer_coupon.admin.index.number'|trans({'%number%': CouponsOrder|length})|raw }}</span></div>
+                    <div class="card-body p-0">
+                        <table class="table tabel-sm">
+                            <thead>
+                            <tr>
+                                <th>{{ 'plugin_customer_coupon.admin.index.seq'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.coupon_cd'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.coupon_name'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.customer_id'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.customer_email'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.lowest_price'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.discount'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.period'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.status'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.index.usage_time'|trans }}</th>
+                                <th>{{ 'plugin_customer_coupon.admin.label.discount_price'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for Coupon in CouponsOrder %}
+                            <tr>
+                                <td class="id">{{ Coupon.id }}</td>
+                                <td class="coupon_cd">{{ Coupon.coupon_cd }}</td>
+                                <td class="coupon_name">{{ Coupon.coupon_name }}</td>
+                                <td>{{ Coupon.customer_id }}</td>
+                                <td>{{ Coupon.customer_email }}</td>
+                                <td>{{ Coupon.coupon_lower_limit|price }}</td>
+                                <td class="coupon_discount">{{ Coupon.discount_rate }} %</td>
+                                <td>{{ Coupon.available_from_date|date_format }}～{{ Coupon.available_to_date|date_format }}</td>
+                                <td>
+                                    {% if Coupon.date_of_use %}
+                                        <span class="text-secondary">{{ 'plugin_customer_coupon.admin.order.use_status.yes'|trans }}</span>
+                                    {% else %}
+                                        <span class="text-success">{{ 'plugin_customer_coupon.admin.order.use_status.no'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ Coupon.date_of_use|date_format }}</td>
+                                <td>{{ Coupon.discount|price }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

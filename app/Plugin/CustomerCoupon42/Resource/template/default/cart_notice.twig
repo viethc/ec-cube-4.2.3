@@ -1,0 +1,43 @@
+{#
+ This file is part of the Customer Coupon plugin
+
+ Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+ http://www.ec-cube.co.jp/
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+#}
+<style>
+    .ec-cartRole .ec-cartRole__couponNotice {
+        margin-bottom: 0;
+        padding: 16px 0 6px;
+        width: 100%;
+        text-align: center;
+        font-weight: normal;
+    }
+    .ec-cartRole__couponNotice strong {
+        color: #de5d50;
+    }
+    @media only screen and (min-width: 768px) {
+        .ec-cartRole .ec-cartRole__couponNotice {
+            margin-bottom: 30px;
+            padding: 0;
+        }
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+        // append to layout
+        $('.ec-cartRole__totalText').last().after($(".ec-cartRole__couponNotice").detach());
+    })
+</script>
+
+{# クーポン情報 #}
+<div class="ec-cartRole__couponNotice">
+    {% if CurrentCoupon  %}
+    <p>{{ 'plugin_customer_coupon.cart.notice.current'|trans({'%coupon_rate%': CurrentCoupon.discount_rate })|raw }}</p>
+    {% endif %}
+    {% if NextCoupon  %}
+    <p>{{ 'plugin_customer_coupon.cart.notice.next'|trans({'%coupon_rate%': NextCoupon.discount_rate, '%price%': NextCoupon.coupon_lower_limit - totalPrice })|raw }}</p>
+    {% endif %}
+</div>
