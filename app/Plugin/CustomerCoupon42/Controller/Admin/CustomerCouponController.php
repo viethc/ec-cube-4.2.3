@@ -115,6 +115,7 @@ class CustomerCouponController extends AbstractController
                 $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponRelease());
             } else {
                 if ($CustomerCoupon->getCouponRelease() != $oldReleaseNumber) {
+                    // TODO: Calc error
                     $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponRelease());
                 }
             }

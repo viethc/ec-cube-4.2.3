@@ -10,20 +10,20 @@
 <script type="text/javascript">
     $(function () {
         // append to layout
-        $(".ec-orderPayment").last().after($("#customer-coupon").detach());
+        $(".ec-orderPayment").last().after($("#coupon").detach());
     })
 </script>
 
-<div id="customer-coupon" class="ec-orderCoupon">
+<div id="coupon" class="ec-orderCoupon">
     <div class="ec-rectHeading">
-        <h2>{{ 'plugin_customer_coupon.front.shopping.header'|trans }}</h2>
+        <h2>{{ 'plugin_coupon.front.shopping.header'|trans }}</h2>
     </div>
-    <div id="customer_detail_box" class="column">
+
+    <div id="customer_detail_box" class="column is-edit">
         {% if CouponOrder %}
             <strong class="ec-color-red">{{ 'plugin_coupon.front.shopping.message.use_code'|trans({'%code%': CouponOrder.coupon_cd }) }}</strong>
         {% else %}
-            {{ 'plugin_customer_coupon.front.shopping.message.notuse'|trans }}
+            {{ 'plugin_coupon.front.shopping.message.empty'|trans }}
         {% endif %}
-        <p><a class="ec-inlineBtn" id="coupon_button" href="{{ url('plugin_customer_coupon_shopping') }}">{{ 'plugin_customer_coupon.front.shopping.button.add_coupon'|trans }}</a></p>
     </div>
 </div>

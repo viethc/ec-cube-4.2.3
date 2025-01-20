@@ -18,6 +18,7 @@ use Eccube\Event\EccubeEvents;
 use Eccube\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 
@@ -44,7 +45,7 @@ class CustomerCouponShoppingController extends AbstractController
     /**
      * @param Request $request
      *
-     * @Route("/mypage/mycoupon", name="plugin_customer_coupon_shopping")
+     * @Route("/mypage/mycoupon", name="plugin_customer_coupon_mycoupon")
      * @Template("@CustomerCoupon42/default/mypage_mycoupon.twig")
      */
     public function mycoupon(Request $request)
@@ -57,5 +58,17 @@ class CustomerCouponShoppingController extends AbstractController
         return [
             'CouponsOrder' => $couponsOrder,
         ];
+    }
+
+    /**
+     * Summary of shoppingCoupon
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array|RedirectResponse
+     * @Route("/plugin/customer-coupon/shopping-coupon", name="plugin_customer_coupon_shopping")
+     * @Template("CustomerCoupon42/Resource/template/default/shopping_coupon.twig")
+     */
+    public function shoppingCoupon(Request $request)
+    {
+
     }
 }

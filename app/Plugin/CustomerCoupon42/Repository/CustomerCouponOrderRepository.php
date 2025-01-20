@@ -32,4 +32,20 @@ class CustomerCouponOrderRepository extends AbstractRepository
     {
         parent::__construct($registry, CustomerCouponOrder::class);
     }
+
+    /**
+     * クーポン受注情報を取得する.
+     *
+     * @param string $preOrderId
+     *
+     * @return CustomerCouponOrder
+     */
+    public function getCouponOrder($preOrderId)
+    {
+        $CustomerCouponOrder = $this->findOneBy([
+            'pre_use_order_id' => $preOrderId,
+        ]);
+
+        return $CustomerCouponOrder;
+    }
 }

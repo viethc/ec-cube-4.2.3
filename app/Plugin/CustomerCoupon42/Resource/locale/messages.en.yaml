@@ -86,7 +86,7 @@ plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</
 plugin_customer_coupon.front.shopping.header: マイクーポン
 # plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
 plugin_customer_coupon.front.shopping.message.empty: クーポンが存在していません。クーポンを所有するために、買い物を続けてください。
-plugin_customer_coupon.front.shopping.message.notuse: クーポンをお持ちの方はクーポンコードを入力してください。
+plugin_customer_coupon.front.shopping.message.notuse: If you have a coupon, please enter the coupon code.
 plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更する
 # plugin_customer_coupon.front.shopping_coupon.header: クーポンコードの入力
 # plugin_customer_coupon.front.shopping_coupon.body: 利用するクーポンコードを入力してください。

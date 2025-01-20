@@ -63,7 +63,7 @@ class PluginManager extends AbstractPluginManager
 
     /**
      * Disable the plugin.
-     * 
+     *
      * @param array{code:string, name:string, version:string, source:int} $meta
      * @param ContainerInterface $container
      */
@@ -81,17 +81,41 @@ class PluginManager extends AbstractPluginManager
      */
     private function createPageLayout(EntityManagerInterface $entityManager)
     {
+        /** @var \Eccube\Repository\PageRepository $PageRepository */
+        $PageRepository = $entityManager->getRepository(Page::class);
+        $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
+
+        // マイページ/マイクーポン
         /** @var \Eccube\Entity\Page $Page */
-        $Page = $entityManager->getRepository(Page::class)->newPage();
+        $Page = $PageRepository->newPage();
         $Page->setEditType(Page::EDIT_TYPE_DEFAULT);
         $Page->setName('マイページ/マイクーポン');
-        $Page->setUrl('plugin_customer_coupon_shopping');
+        $Page->setUrl('plugin_customer_coupon_mycoupon');
         $Page->setFileName('CustomerCoupon42/Resource/template/default/mypage_mycoupon');
         $Page->setMetaRobots('noindex');
         $entityManager->persist($Page);
         $entityManager->flush();
 
-        $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
+        $PageLayout = new PageLayout();
+        $PageLayout->setPage($Page)
+            ->setPageId($Page->getId())
+            ->setLayout($Layout)
+            ->setLayoutId($Layout->getId())
+            ->setSortNo(0);
+        $entityManager->persist($PageLayout);
+        $entityManager->flush();
+
+        // 顧客のクーポンの入力
+        /** @var \Eccube\Entity\Page $Page */
+        $Page = $PageRepository->newPage();
+        $Page->setEditType(Page::EDIT_TYPE_DEFAULT);
+        $Page->setName('顧客のクーポンの入力');
+        $Page->setUrl('plugin_customer_coupon_shopping');
+        $Page->setFileName('CustomerCoupon42/Resource/template/default/shopping_coupon');
+        $Page->setMetaRobots('noindex');
+        $entityManager->persist($Page);
+        $entityManager->flush();
+
         $PageLayout = new PageLayout();
         $PageLayout->setPage($Page)
             ->setPageId($Page->getId())
@@ -109,7 +133,19 @@ class PluginManager extends AbstractPluginManager
      */
     private function removePageLayout(EntityManagerInterface $entityManager)
     {
-        // ページ情報の削除
+        // マイクーポンのページ情報の削除
+        $Page =  $entityManager->getRepository(Page::class)->findOneBy(['url' => 'plugin_customer_coupon_mycoupon']);
+        if ($Page) {
+            $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
+            $PageLayout = $entityManager->getRepository(PageLayout::class)->findOneBy(['Page' => $Page, 'Layout' => $Layout]);
+
+            // Blockの削除
+            $entityManager->remove($PageLayout);
+            $entityManager->remove($Page);
+            $entityManager->flush();
+        }
+
+        // 顧客のクーポンのページ情報の削除
         $Page =  $entityManager->getRepository(Page::class)->findOneBy(['url' => 'plugin_customer_coupon_shopping']);
         if ($Page) {
             $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);

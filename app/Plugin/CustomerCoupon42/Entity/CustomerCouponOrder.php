@@ -79,7 +79,7 @@ class CustomerCouponOrder extends AbstractEntity
     private $customer_id;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="customer_email", type="string", length=255, nullable=true)
      */
@@ -88,9 +88,23 @@ class CustomerCouponOrder extends AbstractEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="order_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="buy_order_id", type="integer", options={"unsigned":true})
      */
-    private $order_id;
+    private $buy_order_id;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="use_order_id", type="integer", nullable=true, options={"unsigned":true})
+     */
+    private $use_order_id;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="pre_use_order_id", type="string", length=255, nullable=true)
+     */
+    private $pre_use_order_id;
 
     /**
      * @var string
@@ -126,6 +140,13 @@ class CustomerCouponOrder extends AbstractEntity
      * @ORM\Column(name="visible", type="boolean", options={"default":true})
      */
     private $visible;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="order_change_status", type="boolean", options={"default":true})
+     */
+    private $order_change_status;
 
     /**
      * @var string
@@ -319,27 +340,75 @@ class CustomerCouponOrder extends AbstractEntity
     }
 
     /**
-     * Set order_id.
+     * Set buy_order_id.
      *
-     * @param int $orderId
+     * @param int $buyOrderId
      *
      * @return CustomerCouponOrder
      */
-    public function setOrderId($orderId)
+    public function setBuyOrderId($buyOrderId)
     {
-        $this->order_id = $orderId;
+        $this->buy_order_id = $buyOrderId;
 
         return $this;
     }
 
     /**
-     * Get order_id.
+     * Get buy_order_id.
      *
      * @return int
      */
-    public function getOrderId()
+    public function getBuyOrderId()
     {
-        return $this->order_id;
+        return $this->buy_order_id;
+    }
+
+    /**
+     * Set use_order_id.
+     *
+     * @param int $useOrderId
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setOrderId($useOrderId)
+    {
+        $this->use_order_id = $useOrderId;
+
+        return $this;
+    }
+
+    /**
+     * Get use_order_id.
+     *
+     * @return int
+     */
+    public function getUseOrderId()
+    {
+        return $this->use_order_id;
+    }
+
+    /**
+     * Set pre_use_order_id.
+     *
+     * @param string $preUseOrderId
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setPreOrderId($preUseOrderId)
+    {
+        $this->pre_use_order_id = $preUseOrderId;
+
+        return $this;
+    }
+
+    /**
+     * Get pre_use_order_id.
+     *
+     * @return string
+     */
+    public function getPreUseOrderId()
+    {
+        return $this->pre_use_order_id;
     }
 
     /**
@@ -484,6 +553,26 @@ class CustomerCouponOrder extends AbstractEntity
     public function isVisible()
     {
         return $this->visible;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getOrderChangeStatus()
+    {
+        return $this->order_change_status;
+    }
+
+    /**
+     * @param bool $orderChangeStatus
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setOrderChangeStatus($orderChangeStatus)
+    {
+        $this->order_change_status = $orderChangeStatus;
+
+        return $this;
     }
 
     /**
