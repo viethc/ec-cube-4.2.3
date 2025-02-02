@@ -107,23 +107,23 @@ class PluginManager extends AbstractPluginManager
 
         // 顧客のクーポンの入力
         /** @var \Eccube\Entity\Page $Page */
-        $Page = $PageRepository->newPage();
-        $Page->setEditType(Page::EDIT_TYPE_DEFAULT);
-        $Page->setName('顧客のクーポンの入力');
-        $Page->setUrl('plugin_customer_coupon_shopping');
-        $Page->setFileName('CustomerCoupon42/Resource/template/default/shopping_coupon');
-        $Page->setMetaRobots('noindex');
-        $entityManager->persist($Page);
-        $entityManager->flush();
+        // $Page = $PageRepository->newPage();
+        // $Page->setEditType(Page::EDIT_TYPE_DEFAULT);
+        // $Page->setName('顧客のクーポンの入力');
+        // $Page->setUrl('plugin_customer_coupon_shopping');
+        // $Page->setFileName('CustomerCoupon42/Resource/template/default/shopping_coupon');
+        // $Page->setMetaRobots('noindex');
+        // $entityManager->persist($Page);
+        // $entityManager->flush();
 
-        $PageLayout = new PageLayout();
-        $PageLayout->setPage($Page)
-            ->setPageId($Page->getId())
-            ->setLayout($Layout)
-            ->setLayoutId($Layout->getId())
-            ->setSortNo(0);
-        $entityManager->persist($PageLayout);
-        $entityManager->flush();
+        // $PageLayout = new PageLayout();
+        // $PageLayout->setPage($Page)
+        //     ->setPageId($Page->getId())
+        //     ->setLayout($Layout)
+        //     ->setLayoutId($Layout->getId())
+        //     ->setSortNo(0);
+        // $entityManager->persist($PageLayout);
+        // $entityManager->flush();
     }
 
     /**
@@ -146,15 +146,15 @@ class PluginManager extends AbstractPluginManager
         }
 
         // 顧客のクーポンのページ情報の削除
-        $Page =  $entityManager->getRepository(Page::class)->findOneBy(['url' => 'plugin_customer_coupon_shopping']);
-        if ($Page) {
-            $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
-            $PageLayout = $entityManager->getRepository(PageLayout::class)->findOneBy(['Page' => $Page, 'Layout' => $Layout]);
+        // $Page =  $entityManager->getRepository(Page::class)->findOneBy(['url' => 'plugin_customer_coupon_shopping']);
+        // if ($Page) {
+        //     $Layout = $entityManager->getRepository(Layout::class)->find(Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
+        //     $PageLayout = $entityManager->getRepository(PageLayout::class)->findOneBy(['Page' => $Page, 'Layout' => $Layout]);
 
-            // Blockの削除
-            $entityManager->remove($PageLayout);
-            $entityManager->remove($Page);
-            $entityManager->flush();
-        }
+        //     // Blockの削除
+        //     $entityManager->remove($PageLayout);
+        //     $entityManager->remove($Page);
+        //     $entityManager->flush();
+        // }
     }
 }
