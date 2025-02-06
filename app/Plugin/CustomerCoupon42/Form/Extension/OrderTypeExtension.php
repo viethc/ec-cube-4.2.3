@@ -13,11 +13,16 @@
 
 namespace Plugin\CustomerCoupon42\Form\Extension;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Eccube\Form\Type\Shopping\OrderType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class OrderTypeExtension extends AbstractTypeExtension
@@ -63,5 +68,52 @@ class OrderTypeExtension extends AbstractTypeExtension
                 'mapped' => false,
             ]
         );
+    }
+
+    private function getCustomerCoupons()
+    {
+        $CustomerCoupons = [];
+
+        
+
+        if (empty($CustomerCoupons)) {
+            return new ArrayCollection();
+        }
+
+        $i = 0;
+        $CouponsIntersected = [];
+        foreach ($CustomerCoupons as $CustomerCoupon) {
+            if ($i === 0) {
+                $CouponsIntersected = $CustomerCoupon;
+            } else {
+                $CouponsIntersected = array_intersect($CouponsIntersected, $CustomerCoupon);
+            }
+            $i++;
+        }
+
+        return new ArrayCollection($CouponsIntersected);
+    }
+
+    private function addCustomerCouponForm(FormInterface $form, array $choices, CustomerCoupon $customerCoupon = null)
+    {
+        $message = trans('plugin_customer_coupon.front.shopping_customer_coupon.unselected');
+
+        if (empty($choices)) {
+            $message = trans('plugin_customer_coupon.front.shopping_customer_coupon.notfound');
+        }
+
+        $form->add('CustomerCoupon', EntityType::class, [
+            'class' => CustomerCoupon::class,
+            'choice_label' => 'coupon_name',
+            'expanded' => true,
+            'multiple' => false,
+            'placeholder' => false,
+            'constraints' => [
+                new NotBlank(['message' => $message]),
+            ],
+            'choices' => $choices,
+            'data' => $customerCoupon,
+            'invalid_message' => $message,
+        ]);
     }
 }

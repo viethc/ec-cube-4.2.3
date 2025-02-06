@@ -121,6 +121,7 @@ class Event implements EventSubscriberInterface
     public function onRenderShopping(TemplateEvent $event)
     {
         $parameters = $event->getParameters();
+        dd($parameters['form']);
         // 登録がない、レンダリングをしない
         /** @var Order $Order */
         $Order = $parameters['Order'];

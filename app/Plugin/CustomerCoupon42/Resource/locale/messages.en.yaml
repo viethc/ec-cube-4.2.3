@@ -92,6 +92,8 @@ plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更�
 # plugin_customer_coupon.front.shopping_coupon.body: 利用するクーポンコードを入力してください。
 # plugin_customer_coupon.front.shopping_coupon.use: クーポンを利用する
 # plugin_customer_coupon.front.shopping_coupon.remove: クーポンを利用しない
+plugin_customer_coupon.front.shopping_customer_coupon.unselected: クーポンを入力してください。
+plugin_customer_coupon.front.shopping_customer_coupon.notfound: このクーポンは利用できません。
 # plugin_customer_coupon.front.shopping.conflictpoint: クーポンとポイントの併用はできません。
 # plugin_customer_coupon.front.mypage.header: ご利用クーポンコード
 # plugin_customer_coupon.front.mypage.body: クーポンコード
