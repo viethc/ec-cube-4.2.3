@@ -86,13 +86,13 @@ plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</
 plugin_customer_coupon.front.shopping.header: マイクーポン
 # plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
 plugin_customer_coupon.front.shopping.message.empty: クーポンが存在していません。クーポンを所有するために、買い物を続けてください。
-plugin_customer_coupon.front.shopping.message.notuse: クーポンをお持ちの方はクーポンコードを入力してください。
+plugin_customer_coupon.front.shopping.message.notuse: 下記をいずれかご選択ください。
 plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更する
 # plugin_customer_coupon.front.shopping_coupon.header: クーポンコードの入力
 # plugin_customer_coupon.front.shopping_coupon.body: 利用するクーポンコードを入力してください。
 # plugin_customer_coupon.front.shopping_coupon.use: クーポンを利用する
 # plugin_customer_coupon.front.shopping_coupon.remove: クーポンを利用しない
-plugin_customer_coupon.front.shopping_customer_coupon.unselected: クーポンを入力してください。
+plugin_customer_coupon.front.shopping_customer_coupon.unselected: クーポンを選択してください。
 plugin_customer_coupon.front.shopping_customer_coupon.notfound: このクーポンは利用できません。
 # plugin_customer_coupon.front.shopping.conflictpoint: クーポンとポイントの併用はできません。
 # plugin_customer_coupon.front.mypage.header: ご利用クーポンコード
@@ -104,4 +104,4 @@ plugin_customer_coupon.front.status: 状態
 plugin_customer_coupon.front.usage_time: 使用時間
 plugin_customer_coupon.front.use_status.yes: 使用済
 plugin_customer_coupon.front.use_status.no: 未使用
-
+plugin_customer_coupon.front.shopping_customer_coupon.notuse: 使用しない

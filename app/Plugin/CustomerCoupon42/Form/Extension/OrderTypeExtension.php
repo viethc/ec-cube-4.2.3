@@ -13,20 +13,54 @@
 
 namespace Plugin\CustomerCoupon42\Form\Extension;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Eccube\Request\Context;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Eccube\Form\Type\Shopping\OrderType;
 use Symfony\Component\Form\FormInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 
 class OrderTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * @var CustomerCouponRepository
+     */
+    protected $customerCouponRepository;
+
+    /**
+     * @var CustomerCouponOrderRepository
+     */
+    protected $customerCouponOrderReposity;
+
+    /**
+     * @var Context
+     */
+    protected $requestContext;
+
+    /**
+     * Constructor
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderReposity
+     */
+    public function __construct(
+        CustomerCouponRepository $customerCouponRepository,
+        CustomerCouponOrderRepository $customerCouponOrderReposity,
+        Context $requestContext
+    ) {
+        $this->customerCouponRepository = $customerCouponRepository;
+        $this->customerCouponOrderReposity = $customerCouponOrderReposity;
+        $this->requestContext = $requestContext;
+    }
+
     public function getExtendedType()
     {
         return OrderType::class;
@@ -47,7 +81,10 @@ class OrderTypeExtension extends AbstractTypeExtension
                 return;
             }
 
+            $CustomerCoupons = $this->getCustomerCoupons();
+
             $form = $event->getForm();
+            $this->addCustomerCouponForm($form, $CustomerCoupons->toArray());
         });
 
         // 配送方法の選択によって使用できる支払い方法がかわるため, フォームを再生成する.
@@ -59,22 +96,26 @@ class OrderTypeExtension extends AbstractTypeExtension
             $form = $event->getForm();
         });
 
-        $builder->remove('Coupon');
-        $builder->add(
-            'Coupon',
-            TextType::class,
-            [
-                'required' => false,
-                'mapped' => false,
-            ]
-        );
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            /** @var Order $Order */
+            $form = $event->getForm();
+            dd($form["CustomerCoupon"]);
+        });
     }
 
     private function getCustomerCoupons()
     {
         $CustomerCoupons = [];
+        $CustomerCouponOrders = [];
 
-        
+        $Customer = $this->requestContext->getCurrentUser();
+        if ($Customer !== null) {
+            $CustomerCouponOrders = $this->customerCouponOrderReposity->findByCustomer($Customer->getId());
+        }
+
+        foreach ($CustomerCouponOrders as $CouponOrder) {
+            $CustomerCoupons[$CouponOrder->getId()][] = $this->customerCouponRepository->find($CouponOrder->getCouponId());
+        }
 
         if (empty($CustomerCoupons)) {
             return new ArrayCollection();
@@ -102,16 +143,25 @@ class OrderTypeExtension extends AbstractTypeExtension
             $message = trans('plugin_customer_coupon.front.shopping_customer_coupon.notfound');
         }
 
-        $form->add('CustomerCoupon', EntityType::class, [
-            'class' => CustomerCoupon::class,
-            'choice_label' => 'coupon_name',
+        $form->add('CustomerCoupon', ChoiceType::class, [
+            // 'class' => CustomerCoupon::class,
+            'choice_value' => function ($choice) {
+                return $choice instanceof CustomerCoupon ? $choice->getId() : 0;
+            },
+            'choice_label' => function ($choice) {
+                return $choice instanceof CustomerCoupon ? $choice->getCouponName() : $choice;
+            },
             'expanded' => true,
             'multiple' => false,
             'placeholder' => false,
+            'mapped' => false,
             'constraints' => [
                 new NotBlank(['message' => $message]),
             ],
-            'choices' => $choices,
+            'choices' => array_merge(
+                ['0' => trans('plugin_customer_coupon.front.shopping_customer_coupon.notuse')],
+                $choices
+            ),
             'data' => $customerCoupon,
             'invalid_message' => $message,
         ]);

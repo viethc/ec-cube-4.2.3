@@ -25,4 +25,11 @@
             {{ 'plugin_customer_coupon.front.shopping.message.notuse'|trans }}
         {% endif %}
     </div>
+    <div class="ec-radio">
+        {% for key, child in form.CustomerCoupon %}
+            <div style="display: block;">
+                {{ form_widget(child, { 'attr': { 'data-trigger': 'change' }}) }}
+            </div>
+        {% endfor %}
+    </div>
 </div>

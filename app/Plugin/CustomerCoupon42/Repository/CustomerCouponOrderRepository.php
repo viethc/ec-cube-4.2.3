@@ -48,4 +48,15 @@ class CustomerCouponOrderRepository extends AbstractRepository
 
         return $CustomerCouponOrder;
     }
+
+    /**
+     * Get by Customer
+     * 
+     * @param mixed $customerId
+     * @return CustomerCouponOrder[]
+     */
+    public function findByCustomer($customerId)
+    {
+        return $this->findBy(["customer_id" => $customerId]);
+    }
 }
