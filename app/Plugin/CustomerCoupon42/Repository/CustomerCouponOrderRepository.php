@@ -59,4 +59,9 @@ class CustomerCouponOrderRepository extends AbstractRepository
     {
         return $this->findBy(["customer_id" => $customerId]);
     }
+
+    public function findByCoupon($couponId)
+    {
+        return $this->findOneBy(["coupon_id" => $couponId]);
+    }
 }

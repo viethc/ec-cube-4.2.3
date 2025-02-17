@@ -50,7 +50,7 @@ class CustomerCouponRepository extends AbstractRepository
 
         // クーポン情報を登録する
         $em->persist($Coupon);
-        $em->flush($Coupon);
+        $em->flush();
 
         return true;
     }
@@ -71,7 +71,7 @@ class CustomerCouponRepository extends AbstractRepository
 
         // クーポン情報を登録する
         $em->persist($Coupon);
-        $em->flush($Coupon);
+        $em->flush();
 
         return true;
     }

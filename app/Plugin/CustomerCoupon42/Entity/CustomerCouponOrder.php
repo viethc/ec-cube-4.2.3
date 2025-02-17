@@ -370,7 +370,7 @@ class CustomerCouponOrder extends AbstractEntity
      *
      * @return CustomerCouponOrder
      */
-    public function setOrderId($useOrderId)
+    public function setUseOrderId($useOrderId)
     {
         $this->use_order_id = $useOrderId;
 
@@ -394,7 +394,7 @@ class CustomerCouponOrder extends AbstractEntity
      *
      * @return CustomerCouponOrder
      */
-    public function setPreOrderId($preUseOrderId)
+    public function setPreUseOrderId($preUseOrderId)
     {
         $this->pre_use_order_id = $preUseOrderId;
 

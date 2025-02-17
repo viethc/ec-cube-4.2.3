@@ -84,7 +84,7 @@ plugin_customer_coupon.cart.notice.next: 値引き率の<strong>%coupon_rate%%</
 # plugin_customer_coupon.front.shopping.changeorder: 注文内容が変更になりました。クーポンをご利用の場合は再度設定をお願いいたします。
 # plugin_customer_coupon.front.shopping.notfound: このクーポンコードは利用できません。
 plugin_customer_coupon.front.shopping.header: マイクーポン
-# plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
+plugin_customer_coupon.front.shopping.message.use_code: クーポンコード %code% を利用しています。
 plugin_customer_coupon.front.shopping.message.empty: クーポンが存在していません。クーポンを所有するために、買い物を続けてください。
 plugin_customer_coupon.front.shopping.message.notuse: 下記をいずれかご選択ください。
 plugin_customer_coupon.front.shopping.button.add_coupon: クーポンを変更する
