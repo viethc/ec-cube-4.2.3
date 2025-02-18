@@ -15,6 +15,7 @@ namespace Plugin\CustomerCoupon42\Form\Extension;
 
 use Eccube\Entity\Order;
 use Eccube\Request\Context;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,12 +23,11 @@ use Eccube\Form\Type\Shopping\OrderType;
 use Symfony\Component\Form\FormInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Plugin\CustomerCoupon42\Service\CustomerCouponService;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
@@ -35,24 +35,29 @@ use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 class OrderTypeExtension extends AbstractTypeExtension
 {
     /**
-     * @var EntityManagerInterface
+     * @var EntityManager
      */
     private $entityManager;
 
     /**
      * @var CustomerCouponRepository
      */
-    protected $customerCouponRepository;
+    private $customerCouponRepository;
 
     /**
      * @var CustomerCouponOrderRepository
      */
-    protected $customerCouponOrderReposity;
+    private $customerCouponOrderReposity;
+
+    /**
+     * @var CustomerCouponService
+     */
+    private $customerCouponService;
 
     /**
      * @var Context
      */
-    protected $requestContext;
+    private $requestContext;
 
     /**
      * Constructor
@@ -60,17 +65,20 @@ class OrderTypeExtension extends AbstractTypeExtension
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager
      * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
      * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderReposity
+     * @param \Plugin\CustomerCoupon42\Service\CustomerCouponService $customerCouponService
      * @param \Eccube\Request\Context $requestContext
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         CustomerCouponRepository $customerCouponRepository,
         CustomerCouponOrderRepository $customerCouponOrderReposity,
+        CustomerCouponService $customerCouponService,
         Context $requestContext
     ) {
         $this->entityManager = $entityManager;
         $this->customerCouponRepository = $customerCouponRepository;
         $this->customerCouponOrderReposity = $customerCouponOrderReposity;
+        $this->customerCouponService = $customerCouponService;
         $this->requestContext = $requestContext;
     }
 
@@ -84,9 +92,16 @@ class OrderTypeExtension extends AbstractTypeExtension
         return [OrderType::class];
     }
 
+    /**
+     * Thêm control vào form dựa trên sự kiện
+     * 
+     * @param \Symfony\Component\Form\FormBuilderInterface $builder
+     * @param array $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        // 支払い方法のプルダウンを生成
+        // POST_SET_DATA
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
           /** @var Order $Order */
             $Order = $event->getData();
@@ -107,7 +122,7 @@ class OrderTypeExtension extends AbstractTypeExtension
             $this->addCustomerCouponForm($form, $CustomerCouponOptions->toArray(), $CustomerCouponOptionCurrent);
         });
 
-        // 配送方法の選択によって使用できる支払い方法がかわるため, フォームを再生成する.
+        // PRE_SUBMIT
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
           /** @var Order $Order */
             $Order = $event->getForm()->getData();
@@ -116,6 +131,7 @@ class OrderTypeExtension extends AbstractTypeExtension
             $form = $event->getForm();
         });
 
+        // POST_SUBMIT
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
             /** @var Order $Order */
             $Order = $event->getForm()->getData();
@@ -130,27 +146,38 @@ class OrderTypeExtension extends AbstractTypeExtension
         });
     }
 
-    private function updateCustomerCouponOrder(Order $Order, ?CustomerCouponOrder $CustomerCouponOrder, CustomerCoupon|string $CustomerCoupon)
+    /**
+     * Cập nhật lại thông tin của Customer Coupon Order
+     * 
+     * @param \Eccube\Entity\Order $Order
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder|null $CustomerCouponOrder
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCoupon|string $CustomerCoupon
+     * @return void
+     */
+    private function updateCustomerCouponOrder(Order $Order, ?CustomerCouponOrder $CustomerCouponOrder, $customerCoupon)
     {
         if ($CustomerCouponOrder) {
-            if (!($CustomerCoupon instanceof CustomerCoupon) || $CustomerCouponOrder->getCouponId() !== $CustomerCoupon->getId()) {
+            if (!($customerCoupon instanceof CustomerCoupon) || $CustomerCouponOrder->getCouponId() !== $customerCoupon->getId()) {
                 $CustomerCouponOrder->setUseOrderId(0);
                 $CustomerCouponOrder->setPreUseOrderId(null);
                 $CustomerCouponOrder->setDiscount(0);
-                // $CustomerCouponOrder->setDateOfUse(null);
             }
         } else {
-            $CustomerCouponOrder = $this->customerCouponOrderReposity->findByCoupon($CustomerCoupon->getId());
+            $CustomerCouponOrder = $this->customerCouponOrderReposity->findByCoupon($customerCoupon->getId());
             $CustomerCouponOrder->setUseOrderId($Order->getId());
             $CustomerCouponOrder->setPreUseOrderId($Order->getPreOrderId());
-            $CustomerCouponOrder->setDiscount(0);
-            // $CustomerCouponOrder->setDateOfUse(new \DateTime());
+            $CustomerCouponOrder->setDiscount($this->customerCouponService->calcDiscount($customerCoupon, $Order->getSubtotal()));
         }
 
         $this->entityManager->persist($CustomerCouponOrder);
         $this->entityManager->flush();
     }
 
+    /**
+     * Get danh sách Customer Coupon theo khách hàng để tạo các Option cho Radio button trên $form
+     * 
+     * @return ArrayCollection<TKey, mixed>|ArrayCollection<TKey, T>
+     */
     private function getCustomerCouponOptions()
     {
         $CustomerCoupons = [];
@@ -183,6 +210,14 @@ class OrderTypeExtension extends AbstractTypeExtension
         return new ArrayCollection($CouponsIntersected);
     }
 
+    /**
+     * Thêm item CustomerCoupon vào $form
+     * 
+     * @param \Symfony\Component\Form\FormInterface $form
+     * @param array $choices
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCoupon|null $customerCoupon
+     * @return void
+     */
     private function addCustomerCouponForm(FormInterface $form, array $choices, CustomerCoupon $customerCoupon = null)
     {
         $message = trans('plugin_customer_coupon.front.shopping_customer_coupon.unselected');

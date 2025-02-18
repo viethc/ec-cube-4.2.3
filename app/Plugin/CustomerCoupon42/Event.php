@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
 use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
+use Plugin\CustomerCoupon42\Service\CustomerCouponService;
 use Symfony\Component\Workflow\Event\Event as CompletedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
@@ -17,11 +18,6 @@ use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 
 class Event implements EventSubscriberInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
     /**
      * @var CustomerCouponRepository
      */
@@ -33,28 +29,25 @@ class Event implements EventSubscriberInterface
     private $customerCouponOrderReposity;
 
     /**
-     * @var FormFactoryInterface
+     * @var CustomerCouponService
      */
-    private $formFactory;
+    private $customerCouponService;
 
     /**
      * Event constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param CustomerCouponRepository $customerCouponRepository
-     * @param CustomerCouponOrderRepository $customerCouponOrderRepository
-     * @param FormFactoryInterface $formFactory
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderRepository
+     * @param \Plugin\CustomerCoupon42\Service\CustomerCouponService $customerCouponService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
         CustomerCouponRepository $customerCouponRepository,
         CustomerCouponOrderRepository $customerCouponOrderRepository,
-        FormFactoryInterface $formFactory
+        CustomerCouponService $customerCouponService
     ) {
-        $this->entityManager = $entityManager;
         $this->customerCouponRepository = $customerCouponRepository;
         $this->customerCouponOrderReposity = $customerCouponOrderRepository;
-        $this->formFactory = $formFactory;
+        $this->customerCouponService = $customerCouponService;
     }
 
     /**
@@ -115,6 +108,7 @@ class Event implements EventSubscriberInterface
 
     /**
      * Thêm snippet thông tin Coupon vào màn hình Shipping
+     * 
      * @param \Eccube\Event\TemplateEvent $event
      * @return void
      */
@@ -140,6 +134,7 @@ class Event implements EventSubscriberInterface
 
     /**
      * Khi đơn hàng hoàn thành, kiểm tra giá trị đơn hàng và phát hành Coupon
+     * 
      * @param \Symfony\Component\Workflow\Event\Event $event
      * @return void
      */
@@ -154,36 +149,11 @@ class Event implements EventSubscriberInterface
 
         $totalPrice = $Order->getSubtotal();
 
-        /**
-         * @var CustomerCoupon $CurrentCoupon
-         */
+        /** @var CustomerCoupon $CurrentCoupon */
         $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
 
         if ($CurrentCoupon) {
-            $currentDateTime = new \DateTime();
-
-            // 時分秒を0に設定する
-            $currentDateTime->setTime(0, 0, 0);
-            $fromDate = (clone $currentDateTime)->add(new \DateInterval('P1D'));
-            $toDate = (clone $currentDateTime)->add(new \DateInterval('P30D'));
-
-            /** @var CustomerCouponOrder $CustomerCouponOrder */
-            $CustomerCouponOrder = new CustomerCouponOrder();
-            $CustomerCouponOrder->setCouponId($CurrentCoupon->getId());
-            $CustomerCouponOrder->setCouponCd($CurrentCoupon->getCouponCd());
-            $CustomerCouponOrder->setCouponName($CurrentCoupon->getCouponName());
-            $CustomerCouponOrder->setCouponLowerLimit($CurrentCoupon->getCouponLowerLimit());
-            $CustomerCouponOrder->setDiscountRate($CurrentCoupon->getDiscountRate());
-            $CustomerCouponOrder->setCustomerId($Customer->getId());
-            $CustomerCouponOrder->setCustomerEmail($Customer->getEmail());
-            $CustomerCouponOrder->setBuyOrderId($Order->getId());
-            $CustomerCouponOrder->setAvailableFromDate($fromDate);
-            $CustomerCouponOrder->setAvailableToDate($toDate);
-            $CustomerCouponOrder->setVisible(true);
-            $CustomerCouponOrder->setOrderChangeStatus(false);
-
-            $this->entityManager->persist($CustomerCouponOrder);
-            $this->entityManager->flush();
+            $this->customerCouponService->registCustomerCouponOrder($Order, $Customer, $CurrentCoupon);
         }
     }
 }

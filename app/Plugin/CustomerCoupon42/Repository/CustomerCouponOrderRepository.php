@@ -34,11 +34,24 @@ class CustomerCouponOrderRepository extends AbstractRepository
     }
 
     /**
+     * Save
+     * 
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder $CustomerCouponOrder
+     * @return void
+     */
+    public function save($CustomerCouponOrder)
+    {
+        $em = $this->getEntityManager();
+        $em->persist($CustomerCouponOrder);
+        $em->flush();
+    }
+
+    /**
      * クーポン受注情報を取得する.
      *
      * @param string $preOrderId
      *
-     * @return CustomerCouponOrder
+     * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder
      */
     public function getCouponOrder($preOrderId)
     {
@@ -53,13 +66,19 @@ class CustomerCouponOrderRepository extends AbstractRepository
      * Get by Customer
      * 
      * @param mixed $customerId
-     * @return CustomerCouponOrder[]
+     * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder[]
      */
     public function findByCustomer($customerId)
     {
         return $this->findBy(["customer_id" => $customerId]);
     }
 
+    /**
+     * Find by Coupon ID
+     * 
+     * @param mixed $couponId
+     * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder|null
+     */
     public function findByCoupon($couponId)
     {
         return $this->findOneBy(["coupon_id" => $couponId]);

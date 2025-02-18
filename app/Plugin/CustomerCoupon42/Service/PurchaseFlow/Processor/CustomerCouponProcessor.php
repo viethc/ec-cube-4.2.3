@@ -41,6 +41,12 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
      */
     protected $customerCouponOrderReposity;
 
+    /**
+     * Summary of __construct
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderReposity
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         CustomerCouponRepository $customerCouponRepository,
@@ -57,10 +63,12 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
             return;
         }
 
+        // Remove all OrderItem
+        $this->removeCustomerCouponDiscountItem($itemHolder);
+
         $CustomerCouponOrder = $this->customerCouponOrderReposity->getCouponOrder($itemHolder->getPreOrderId());
 
         if ($CustomerCouponOrder) {
-            $this->removeCustomerCouponDiscountItem($itemHolder);
             $this->addCustomerCouponDiscountItem($itemHolder, $CustomerCouponOrder);
         }
     }
@@ -69,10 +77,34 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
     {
     }
 
+    /**
+     * Xử lý trước khi xác nhận đơn hàng
+     * 
+     * @param \Eccube\Entity\ItemHolderInterface $itemHolder
+     * @param \Eccube\Service\PurchaseFlow\PurchaseContext $context
+     * @return void
+     */
     public function prepare(ItemHolderInterface $itemHolder, PurchaseContext $context)
     {
         if (!$itemHolder instanceof Order) {
             return;
+        }
+
+        $CustomerCouponOrder = $this->customerCouponOrderReposity->getCouponOrder($itemHolder->getPreOrderId());
+
+        if (!$CustomerCouponOrder) {
+            return;
+        }
+
+        // Cập nhật Ngày sử dụng Coupon
+        $CustomerCouponOrder->setDateOfUse(new \DateTime());
+        $this->customerCouponOrderReposity->save($CustomerCouponOrder);
+
+        // Cập nhật Số lần sử dụng Coupon (giảm 1 lần)
+        $CustomerCoupon = $this->customerCouponRepository->find($CustomerCouponOrder->getCouponId());
+        if ($CustomerCoupon) {
+            $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponUseTime() - 1);
+            $this->entityManager->flush($CustomerCoupon);
         }
     }
 
@@ -90,6 +122,12 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         //
     }
 
+    /**
+     * Remove tất cả OrderItem được đăng ký từ class CustomerCouponProcessor
+     * 
+     * @param \Eccube\Entity\Order $itemHolder
+     * @return void
+     */
     private function removeCustomerCouponDiscountItem(Order $itemHolder)
     {
         foreach ($itemHolder->getItems() as $item) {
@@ -100,6 +138,13 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         }
     }
 
+    /**
+     * Thêm OrderItem để giảm giá theo Coupon
+     * 
+     * @param \Eccube\Entity\Order $itemHolder
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder $customerCouponOrder
+     * @return void
+     */
     private function addCustomerCouponDiscountItem(Order $itemHolder, CustomerCouponOrder $customerCouponOrder)
     {
         $CustomerCoupon = $this->customerCouponRepository->find($customerCouponOrder->getCouponId());
@@ -108,7 +153,6 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         $taxType = TaxType::NON_TAXABLE; // 不課税
         $tax = 0;
         $taxRate = 0;
-        $taxRuleId = null;
         $roundingType = null;
         $DiscountType = $this->entityManager->find(OrderItemType::class, OrderItemType::DISCOUNT);
         $TaxInclude = $this->entityManager->find(TaxDisplayType::class, $taxDisplayType);

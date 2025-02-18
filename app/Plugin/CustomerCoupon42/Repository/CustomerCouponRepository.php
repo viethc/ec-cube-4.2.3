@@ -35,21 +35,34 @@ class CustomerCouponRepository extends AbstractRepository
     }
 
     /**
+     * Save
+     * 
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCoupon $CustomerCoupon
+     * @return void
+     */
+    public function save($CustomerCoupon)
+    {
+        $em = $this->getEntityManager();
+        $em->persist($CustomerCoupon);
+        $em->flush();
+    }
+
+    /**
      * クーポン情報を有効/無効にする.
      *
      * @param CustomerCoupon $Coupon
      *
      * @return bool
      */
-    public function enableCoupon(CustomerCoupon $Coupon)
+    public function enableCoupon(CustomerCoupon $CustomerCoupon)
     {
         $em = $this->getEntityManager();
 
         // クーポン情報を書き換える
-        $Coupon->setEnableFlag(!$Coupon->getEnableFlag());
+        $CustomerCoupon->setEnableFlag(!$CustomerCoupon->getEnableFlag());
 
         // クーポン情報を登録する
-        $em->persist($Coupon);
+        $em->persist($CustomerCoupon);
         $em->flush();
 
         return true;
@@ -58,34 +71,34 @@ class CustomerCouponRepository extends AbstractRepository
     /**
      * クーポン情報を削除する.
      *
-     * @param CustomerCoupon $Coupon
+     * @param CustomerCoupon $CustomerCoupon
      *
      * @return bool
      */
-    public function deleteCoupon(CustomerCoupon $Coupon)
+    public function deleteCoupon(CustomerCoupon $CustomerCoupon)
     {
         $em = $this->getEntityManager();
 
         // クーポン情報を書き換える
-        $Coupon->setVisible(false);
+        $CustomerCoupon->setVisible(false);
 
         // クーポン情報を登録する
-        $em->persist($Coupon);
+        $em->persist($CustomerCoupon);
         $em->flush();
 
         return true;
     }
 
-    public function findByActiveCoupon()
-    {
-        $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
+    // public function findByActiveCoupon()
+    // {
+    //     $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
 
-        $qb->andWhere('c.enable_flag = :enable_flag')->setParameter('enable_flag', Constant::ENABLED);
-        $qb->andWhere('c.coupon_use_time > 0');
-        $qb->orderBy('c.coupon_lower_limit');
+    //     $qb->andWhere('c.enable_flag = :enable_flag')->setParameter('enable_flag', Constant::ENABLED);
+    //     $qb->andWhere('c.coupon_use_time > 0');
+    //     $qb->orderBy('c.coupon_lower_limit');
 
-        return $qb->getQuery()->getResult();
-    }
+    //     return $qb->getQuery()->getResult();
+    // }
 
     public function findOneActiveCoupon($totalPrice = 0, $order = 'DESC')
     {
