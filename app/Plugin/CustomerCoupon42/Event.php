@@ -5,15 +5,11 @@ namespace Plugin\CustomerCoupon42;
 use Eccube\Entity\Order;
 use Eccube\Entity\Customer;
 use Eccube\Event\TemplateEvent;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormFactoryInterface;
 use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
-use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
 use Plugin\CustomerCoupon42\Service\CustomerCouponService;
 use Symfony\Component\Workflow\Event\Event as CompletedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
-use Plugin\CustomerCoupon42\Form\Type\Shopping\CustomerCouponUseType;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 
 class Event implements EventSubscriberInterface
@@ -94,10 +90,27 @@ class Event implements EventSubscriberInterface
 
         $totalPrice = $parameters['totalPrice'];
 
-        $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
-        $parameters['CurrentCoupon'] = $CurrentCoupon;
+        $CurrentCoupon = null;
+        $NextCoupon = null;
+        $CustomerCoupons = $this->customerCouponRepository->findByActiveCoupons();
 
-        $NextCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice, 'ASC');
+        foreach ($CustomerCoupons as $index => $CustomerCoupon) {
+            if ($totalPrice <= $CustomerCoupon->getCouponLowerLimit()) {
+                if ($totalPrice === $CustomerCoupon->getCouponLowerLimit()) {
+                    $CurrentCoupon = clone $CustomerCoupon;
+                    if ($index < count($CustomerCoupons) - 1) {
+                        $NextCoupon = clone $CustomerCoupons[$index + 1];
+                    }
+                } else {
+                    $CurrentCoupon = clone $CustomerCoupons[$index > 0 ? $index - 1 : $index];
+                    $NextCoupon = clone $CustomerCoupon;
+                }
+
+                break;
+            }
+        }
+
+        $parameters['CurrentCoupon'] = $CurrentCoupon;
         $parameters['NextCoupon'] = $NextCoupon;
 
         // set parameter for twig files
@@ -115,7 +128,7 @@ class Event implements EventSubscriberInterface
     public function onRenderShopping(TemplateEvent $event)
     {
         $parameters = $event->getParameters();
-        // dd($parameters);
+
         // 登録がない、レンダリングをしない
         /** @var Order $Order */
         $Order = $parameters['Order'];
@@ -150,7 +163,7 @@ class Event implements EventSubscriberInterface
         $totalPrice = $Order->getSubtotal();
 
         /** @var CustomerCoupon $CurrentCoupon */
-        $CurrentCoupon = $this->customerCouponRepository->findOneActiveCoupon($totalPrice);
+        $CurrentCoupon = $this->customerCouponRepository->findOneUseCoupon($totalPrice);
 
         if ($CurrentCoupon) {
             $this->customerCouponService->registCustomerCouponOrder($Order, $Customer, $CurrentCoupon);

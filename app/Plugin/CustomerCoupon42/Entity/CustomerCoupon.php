@@ -42,7 +42,7 @@ class CustomerCoupon extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="coupon_cd", type="string", nullable=true, length=20, unique=true)
+     * @ORM\Column(name="coupon_cd", type="string", nullable=true, length=20, unique=true, options={"index":true})
      */
     private $coupon_cd;
 
@@ -67,33 +67,42 @@ class CustomerCoupon extends AbstractEntity
      */
     private $discount_rate;
 
+    // /**
+    //  * The validity period
+    //  *
+    //  * @var int
+    //  *
+    //  * @ORM\Column(name="validity_period", type="integer", nullable=false, options={"unsigned":true, "default":0})
+    //  */
+    // private $validity_period;
+
     /**
      * The number of coupon release
      *
      * @var int
      *
-     * @ORM\Column(name="coupon_release", type="integer", nullable=false)
+     * @ORM\Column(name="coupon_release", type="integer", nullable=false, options={"unsigned":true, "default":0})
      */
     private $coupon_release;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="coupon_use_time", type="integer", nullable=true)
+     * @ORM\Column(name="coupon_use_time", type="integer", nullable=true, options={"unsigned":true, "default":0})
      */
     private $coupon_use_time;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="enable_flag", type="boolean", nullable=false, options={"default":true})
+     * @ORM\Column(name="enable_flag", type="boolean", nullable=false, options={"default":true, "index":true})
      */
     private $enable_flag;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="visible", type="boolean", options={"default":true})
+     * @ORM\Column(name="visible", type="boolean", options={"default":true, "index":true})
      */
     private $visible;
 
@@ -219,6 +228,26 @@ class CustomerCoupon extends AbstractEntity
     {
         return $this->discount_rate;
     }
+
+    // /**
+    //  * @return int
+    //  */
+    // public function getValidityPeriod()
+    // {
+    //     return $this->validity_period;
+    // }
+
+    // /**
+    //  * @param int $validity_period
+    //  *
+    //  * @return CustomerCoupon
+    //  */
+    // public function setValidityPeriod($validity_period)
+    // {
+    //     $this->validity_period = $validity_period;
+
+    //     return $this;
+    // }
 
     /**
      * @return int

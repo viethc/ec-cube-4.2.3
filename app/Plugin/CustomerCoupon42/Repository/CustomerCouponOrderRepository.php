@@ -15,6 +15,7 @@ namespace Plugin\CustomerCoupon42\Repository;
 
 use Eccube\Repository\AbstractRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Eccube\Entity\Customer;
 use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
 
 /**
@@ -63,24 +64,93 @@ class CustomerCouponOrderRepository extends AbstractRepository
     }
 
     /**
-     * Get by Customer
-     * 
-     * @param mixed $customerId
-     * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder[]
+     * Find `CustomerCouponOrder` was lost session
      */
-    public function findByCustomer($customerId)
+    public function findByLostSession()
     {
-        return $this->findBy(["customer_id" => $customerId]);
+        $qb = $this->createQueryBuilder('c')
+            ->select('c')
+            ->Where('c.visible = true')
+            ->andWhere('c.use_order_id > 0')
+            ->andWhere('c.pre_use_order_id IS NOT NULL')
+            ->andWhere('c.date_of_use IS NULL');
+
+        // LIMIT 1
+        $qb->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
-     * Find by Coupon ID
+     * Get list CustomerCouponOrder by Customer
      * 
+     * @param \Eccube\Entity\Customer $Customer
+     * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder[]
+     */
+    public function getOptionsByCustomer($Customer)
+    {
+        $customerId = $Customer->getId();
+        $customerEmail = $Customer->getEmail();
+        $currenDateTime = new \DateTime();
+        $currenDateTime->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('c')
+            ->select('c')
+            ->Where('c.visible = true');
+
+        $qb->andWhere('c.customer_id = :customer_id OR c.customer_email = :customer_email')
+            ->setParameter('customer_id', $customerId)
+            ->setParameter('customer_email', $customerEmail);
+
+        $qb->andWhere('c.available_from_date <= :cur_date_time OR c.available_from_date IS NULL')
+            ->setParameter('cur_date_time', $currenDateTime);
+
+        $qb->andWhere(':cur_date_time <= c.available_to_date OR c.available_to_date IS NULL')
+            ->setParameter('cur_date_time', $currenDateTime);
+
+        $qb->andWhere('c.date_of_use IS NULL');
+        $qb->orderBy('c.discount_rate');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find by Customer, Coupon ID
+     * 
+     * @param \Eccube\Entity\Customer $Customer
      * @param mixed $couponId
      * @return \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder|null
      */
-    public function findByCoupon($couponId)
+    public function findByCustomerCoupon($Customer, $couponId)
     {
-        return $this->findOneBy(["coupon_id" => $couponId]);
+        $customerId = $Customer->getId();
+        $customerEmail = $Customer->getEmail();
+        $currenDateTime = new \DateTime();
+        $currenDateTime->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('c')
+            ->select('c')
+            ->Where('c.visible = true');
+
+        $qb->andWhere('c.coupon_id = :coupon_id')
+            ->setParameter('coupon_id', $couponId);
+        
+        $qb->andWhere('c.customer_id = :customer_id OR c.customer_email = :customer_email')
+            ->setParameter('customer_id', $customerId)
+            ->setParameter('customer_email', $customerEmail);
+
+        $qb->andWhere('c.available_from_date <= :cur_date_time OR c.available_from_date IS NULL')
+            ->setParameter('cur_date_time', $currenDateTime);
+
+        $qb->andWhere(':cur_date_time <= c.available_to_date OR c.available_to_date IS NULL')
+            ->setParameter('cur_date_time', $currenDateTime);
+
+        $qb->andWhere('c.date_of_use IS NULL');
+        $qb->orderBy('c.available_to_date');
+
+            // LIMIT 1
+        $qb->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

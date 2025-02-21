@@ -15,15 +15,13 @@
 </script>
 
 <div id="customer-coupon-confirm" class="ec-orderCoupon">
+    {% if CouponOrder %}
     <div class="ec-rectHeading">
         <h2>{{ 'plugin_customer_coupon.front.shopping.header'|trans }}</h2>
     </div>
 
     <div id="customer_coupon_detail_box" class="column is-edit">
-        {% if CouponsOrder %}
-            <strong class="ec-color-red">{{ 'plugin_customer_coupon.front.shopping.message.use_code'|trans({'%code%': CouponsOrder.coupon_cd }) }}</strong>
-        {% else %}
-            {{ 'plugin_customer_coupon.front.shopping.message.empty'|trans }}
-        {% endif %}
+        <strong class="ec-color-red">{{ 'plugin_customer_coupon.front.shopping.message.use_code'|trans({'%code%': CouponOrder.coupon_cd }) }}</strong>
     </div>
+    {% endif %}
 </div>

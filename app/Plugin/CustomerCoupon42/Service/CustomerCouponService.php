@@ -20,6 +20,7 @@ use Eccube\Service\TaxRuleService;
 use Eccube\Repository\TaxRuleRepository;
 use Plugin\CustomerCoupon42\Entity\CustomerCoupon;
 use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
+use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -44,6 +45,11 @@ class CustomerCouponService
     private $taxRuleRepository;
 
     /**
+     * @var CustomerCouponRepository
+     */
+    private $customerCouponRepository;
+
+    /**
      * @var CustomerCouponOrderRepository
      */
     private $customerCouponOrderRepository;
@@ -54,17 +60,20 @@ class CustomerCouponService
      * @param \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface $authorizationChecker
      * @param \Eccube\Service\TaxRuleService $taxRuleService
      * @param \Eccube\Repository\TaxRuleRepository $taxRuleRepository
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
      * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderRepository
      */
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
         TaxRuleService $taxRuleService,
         TaxRuleRepository $taxRuleRepository,
+        CustomerCouponRepository $customerCouponRepository,
         CustomerCouponOrderRepository $customerCouponOrderRepository
     ) {
         $this->authorizationChecker = $authorizationChecker;
         $this->taxRuleService = $taxRuleService;
         $this->taxRuleRepository = $taxRuleRepository;
+        $this->customerCouponRepository = $customerCouponRepository;
         $this->customerCouponOrderRepository = $customerCouponOrderRepository;
     }
 
@@ -99,6 +108,7 @@ class CustomerCouponService
         $currentDateTime = new \DateTime();
 
         // Coupon có 30 ngày hiệu lực từ sau khi hoàn thành đơn hàng 1 ngày
+        // TODO Số ngày hiệu lực nên có thể đăng ký khi tạo Customer Coupon
         $currentDateTime->setTime(0, 0, 0);
         $fromDate = (clone $currentDateTime)->add(new \DateInterval('P1D'));
         $toDate = (clone $currentDateTime)->add(new \DateInterval('P30D'));
@@ -122,9 +132,14 @@ class CustomerCouponService
         }
 
         // Thêm thông tin Coupon vào cuối Mail gửi khách hàng
+        // TODO Mail đã được gửi sau khi hoàn thành đơn hàng, nên phần bên dưới cần xem lại
         $this->setOrderCompleteMailMessage($Order, $CustomerCoupon->getCouponCd(), $CustomerCoupon->getCouponName());
 
         $this->customerCouponOrderRepository->save($CustomerCouponOrder);
+
+        // Update `Số lượt khả dụng còn lại` của Customer Coupon
+        $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponUseTime() > 0 ? $CustomerCoupon->getCouponUseTime() - 1 : 0);
+        $this->customerCouponRepository->save($CustomerCoupon);
     }
 
     /**

@@ -170,6 +170,17 @@ class CustomerCouponOrder extends AbstractEntity
     private $update_date;
 
     /**
+     * CustomerCoupon
+     * @var CustomerCoupon
+     * 
+     * @ORM\ManyToOne(targetEntity="Plugin\CustomerCoupon42\Entity\CustomerCoupon")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="coupon_id", referencedColumnName="coupon_id")
+     * })
+     */
+    private $CustomerCoupon;
+
+    /**
      * Get id.
      *
      * @return int
@@ -621,5 +632,29 @@ class CustomerCouponOrder extends AbstractEntity
     public function getUpdateDate()
     {
         return $this->update_date;
+    }
+
+    /**
+     * Set CustomerCoupon.
+     *
+     * @param CustomerCoupon $customerCoupon
+     *
+     * @return CustomerCouponOrder
+     */
+    public function setCoupon(CustomerCoupon $customerCoupon)
+    {
+        $this->CustomerCoupon = $customerCoupon;
+
+        return $this;
+    }
+
+    /**
+     * Get CustomerCoupon.
+     *
+     * @return CustomerCoupon
+     */
+    public function getCustomerCoupon()
+    {
+        return $this->CustomerCoupon;
     }
 }

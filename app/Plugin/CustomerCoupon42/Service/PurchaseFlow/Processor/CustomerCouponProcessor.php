@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Eccube\Entity\Master\TaxDisplayType;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseProcessor;
-use Eccube\Service\PurchaseFlow\ItemHolderValidator;
 use Eccube\Service\PurchaseFlow\ItemHolderPreprocessor;
 use Plugin\CustomerCoupon42\Entity\CustomerCouponOrder;
 use Plugin\CustomerCoupon42\Repository\CustomerCouponRepository;
@@ -24,7 +23,7 @@ use Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository;
  * 
  * @ShoppingFlow
  */
-class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderPreprocessor, PurchaseProcessor
+class CustomerCouponProcessor implements ItemHolderPreprocessor, PurchaseProcessor
 {
     /**
      * @var EntityManager
@@ -57,6 +56,16 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         $this->customerCouponOrderReposity = $customerCouponOrderReposity;
     }
 
+    /*
+     * ItemHolderPreprocessor
+     */
+
+    /**
+     * Summary of process
+     * @param \Eccube\Entity\ItemHolderInterface $itemHolder
+     * @param \Eccube\Service\PurchaseFlow\PurchaseContext $context
+     * @return void
+     */
     public function process(ItemHolderInterface $itemHolder, PurchaseContext $context)
     {
         if (!$itemHolder instanceof Order) {
@@ -73,11 +82,11 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         }
     }
 
-    protected function validate(ItemHolderInterface $itemHolder, PurchaseContext $context)
-    {
-    }
+    /*
+     * Implement methods of PurchaseProcessor
+     */
 
-    /**
+     /**
      * Xử lý trước khi xác nhận đơn hàng
      * 
      * @param \Eccube\Entity\ItemHolderInterface $itemHolder
@@ -99,13 +108,6 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
         // Cập nhật Ngày sử dụng Coupon
         $CustomerCouponOrder->setDateOfUse(new \DateTime());
         $this->customerCouponOrderReposity->save($CustomerCouponOrder);
-
-        // Cập nhật Số lần sử dụng Coupon (giảm 1 lần)
-        $CustomerCoupon = $this->customerCouponRepository->find($CustomerCouponOrder->getCouponId());
-        if ($CustomerCoupon) {
-            $CustomerCoupon->setCouponUseTime($CustomerCoupon->getCouponUseTime() - 1);
-            $this->entityManager->flush($CustomerCoupon);
-        }
     }
 
     public function commit(ItemHolderInterface $target, PurchaseContext $context)
@@ -115,10 +117,6 @@ class CustomerCouponProcessor extends ItemHolderValidator implements ItemHolderP
 
     public function rollback(ItemHolderInterface $itemHolder, PurchaseContext $context)
     {
-        if (!$itemHolder instanceof Order) {
-            return;
-        }
-
         //
     }
 

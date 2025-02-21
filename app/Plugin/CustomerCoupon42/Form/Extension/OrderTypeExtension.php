@@ -47,7 +47,7 @@ class OrderTypeExtension extends AbstractTypeExtension
     /**
      * @var CustomerCouponOrderRepository
      */
-    private $customerCouponOrderReposity;
+    private $customerCouponOrderRepository;
 
     /**
      * @var CustomerCouponService
@@ -64,20 +64,20 @@ class OrderTypeExtension extends AbstractTypeExtension
      * 
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager
      * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponRepository $customerCouponRepository
-     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderReposity
+     * @param \Plugin\CustomerCoupon42\Repository\CustomerCouponOrderRepository $customerCouponOrderRepository
      * @param \Plugin\CustomerCoupon42\Service\CustomerCouponService $customerCouponService
      * @param \Eccube\Request\Context $requestContext
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         CustomerCouponRepository $customerCouponRepository,
-        CustomerCouponOrderRepository $customerCouponOrderReposity,
+        CustomerCouponOrderRepository $customerCouponOrderRepository,
         CustomerCouponService $customerCouponService,
         Context $requestContext
     ) {
         $this->entityManager = $entityManager;
         $this->customerCouponRepository = $customerCouponRepository;
-        $this->customerCouponOrderReposity = $customerCouponOrderReposity;
+        $this->customerCouponOrderRepository = $customerCouponOrderRepository;
         $this->customerCouponService = $customerCouponService;
         $this->requestContext = $requestContext;
     }
@@ -101,6 +101,11 @@ class OrderTypeExtension extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // Nếu được gọi từ ShoppingController::checkout thì bỏ qua
+        if ($options['skip_add_form']) {
+            return;
+        }
+
         // POST_SET_DATA
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
           /** @var Order $Order */
@@ -111,24 +116,26 @@ class OrderTypeExtension extends AbstractTypeExtension
 
             // Trường hợp Order đã được áp dụng Coupon nào đó
             $CustomerCouponOptionCurrent = null;
-            $CustomerCouponOrder = $this->customerCouponOrderReposity->getCouponOrder($Order->getPreOrderId());
-            if (null !== $CustomerCouponOrder) {
+            $CustomerCouponOrder = $this->customerCouponOrderRepository->getCouponOrder($Order->getPreOrderId());
+
+            // Trường hợp tồn tại thì get `CustomerCoupon` cho selected option
+            if ($CustomerCouponOrder) {
                 $CustomerCouponOptionCurrent = $this->customerCouponRepository->find($CustomerCouponOrder->getCouponId());
+            } else {
+                // Check trường hợp `CustomerCouponOrder` đã được chọn nhưng mất session
+                $CustomerCouponOrder = $this->customerCouponOrderRepository->findByLostSession();
+
+                // Nếu có thì clear thông tin Order
+                if ($CustomerCouponOrder) {
+                    $this->updateCustomerCouponOrder($Order, $CustomerCouponOrder);
+                }
             }
 
+            // Lấy danh sách các CustomerCoupon hiệu lực để tạo data options
             $CustomerCouponOptions = $this->getCustomerCouponOptions();
 
             $form = $event->getForm();
             $this->addCustomerCouponForm($form, $CustomerCouponOptions->toArray(), $CustomerCouponOptionCurrent);
-        });
-
-        // PRE_SUBMIT
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-          /** @var Order $Order */
-            $Order = $event->getForm()->getData();
-            $data = $event->getData();
-
-            $form = $event->getForm();
         });
 
         // POST_SUBMIT
@@ -136,7 +143,7 @@ class OrderTypeExtension extends AbstractTypeExtension
             /** @var Order $Order */
             $Order = $event->getForm()->getData();
 
-            $CustomerCouponOrder = $this->customerCouponOrderReposity->getCouponOrder($Order->getPreOrderId());
+            $CustomerCouponOrder = $this->customerCouponOrderRepository->getCouponOrder($Order->getPreOrderId());
 
             $form = $event->getForm();
             if ($form->has("CustomerCoupon")) {
@@ -151,26 +158,53 @@ class OrderTypeExtension extends AbstractTypeExtension
      * 
      * @param \Eccube\Entity\Order $Order
      * @param \Plugin\CustomerCoupon42\Entity\CustomerCouponOrder|null $CustomerCouponOrder
-     * @param \Plugin\CustomerCoupon42\Entity\CustomerCoupon|string $CustomerCoupon
+     * @param \Plugin\CustomerCoupon42\Entity\CustomerCoupon|string|null $CustomerCoupon
      * @return void
      */
-    private function updateCustomerCouponOrder(Order $Order, ?CustomerCouponOrder $CustomerCouponOrder, $customerCoupon)
+    private function updateCustomerCouponOrder(Order $Order, ?CustomerCouponOrder $CustomerCouponOrder, $CustomerCoupon = null)
     {
+        $clearFlg = false;
+        $renewFlg = false;
+        $resetFlg = false;
+
         if ($CustomerCouponOrder) {
-            if (!($customerCoupon instanceof CustomerCoupon) || $CustomerCouponOrder->getCouponId() !== $customerCoupon->getId()) {
-                $CustomerCouponOrder->setUseOrderId(0);
-                $CustomerCouponOrder->setPreUseOrderId(null);
-                $CustomerCouponOrder->setDiscount(0);
+            if ($CustomerCoupon instanceof CustomerCoupon) {
+                if ($CustomerCouponOrder->getCouponId() !== $CustomerCoupon->getId()) {
+                    $clearFlg = true;
+                    $renewFlg = true;
+                } else {
+                    $resetFlg = true;
+                }
+            } else {
+                $clearFlg = true;
             }
         } else {
-            $CustomerCouponOrder = $this->customerCouponOrderReposity->findByCoupon($customerCoupon->getId());
-            $CustomerCouponOrder->setUseOrderId($Order->getId());
-            $CustomerCouponOrder->setPreUseOrderId($Order->getPreOrderId());
-            $CustomerCouponOrder->setDiscount($this->customerCouponService->calcDiscount($customerCoupon, $Order->getSubtotal()));
+            if ($CustomerCoupon instanceof CustomerCoupon) {
+                $renewFlg = true;
+            }
         }
 
-        $this->entityManager->persist($CustomerCouponOrder);
-        $this->entityManager->flush();
+        // Trường hợp chọn "Không sử dụng Coupon" hoặc chọn sử dụng Coupon khác với Coupon đã lưu
+        // thì clear thông tin Order khỏi CustomerCouponOrder hiện tại
+        if ($clearFlg) {
+            $CustomerCouponOrder->setUseOrderId(0);
+            $CustomerCouponOrder->setPreUseOrderId(null);
+            $CustomerCouponOrder->setDiscount(0);
+            $this->customerCouponOrderRepository->save($CustomerCouponOrder);
+        }
+
+        if ($renewFlg || $resetFlg) {
+            // Trường hợp chọn sử dụng Coupon mà khác với Coupon đã lưu
+            // thì get lại CustomerCouponOrder tương ứng
+            if ($renewFlg) {
+                $Customer = $this->requestContext->getCurrentUser();
+                $CustomerCouponOrder = $this->customerCouponOrderRepository->findByCustomerCoupon($Customer, $CustomerCoupon->getId());
+            }
+            $CustomerCouponOrder->setUseOrderId($Order->getId());
+            $CustomerCouponOrder->setPreUseOrderId($Order->getPreOrderId());
+            $CustomerCouponOrder->setDiscount($this->customerCouponService->calcDiscount($CustomerCoupon, $Order->getSubtotal()));
+            $this->customerCouponOrderRepository->save($CustomerCouponOrder);
+        }
     }
 
     /**
@@ -185,29 +219,23 @@ class OrderTypeExtension extends AbstractTypeExtension
 
         $Customer = $this->requestContext->getCurrentUser();
         if ($Customer !== null) {
-            $CustomerCouponOrders = $this->customerCouponOrderReposity->findByCustomer($Customer->getId());
+            $CustomerCouponOrders = $this->customerCouponOrderRepository->getOptionsByCustomer($Customer);
         }
 
         foreach ($CustomerCouponOrders as $CouponOrder) {
-            $CustomerCoupons[$CouponOrder->getId()][] = $this->customerCouponRepository->find($CouponOrder->getCouponId());
+            $CustomerCoupons[$CouponOrder->getId()] = $this->customerCouponRepository->find($CouponOrder->getCouponId());
         }
 
         if (empty($CustomerCoupons)) {
             return new ArrayCollection();
         }
 
-        $i = 0;
-        $CouponsIntersected = [];
-        foreach ($CustomerCoupons as $CustomerCoupon) {
-            if ($i === 0) {
-                $CouponsIntersected = $CustomerCoupon;
-            } else {
-                $CouponsIntersected = array_intersect($CouponsIntersected, $CustomerCoupon);
-            }
-            $i++;
-        }
+        $CouponsUnique = array_reduce($CustomerCoupons, function ($carry, $CustomerCoupon) {
+            $carry[$CustomerCoupon->getId()] = $CustomerCoupon;
+            return $carry;
+        }, []);
 
-        return new ArrayCollection($CouponsIntersected);
+        return new ArrayCollection($CouponsUnique);
     }
 
     /**
@@ -227,7 +255,6 @@ class OrderTypeExtension extends AbstractTypeExtension
         }
 
         $form->add('CustomerCoupon', ChoiceType::class, [
-            // 'class' => CustomerCoupon::class,
             'choice_value' => function ($choice) {
                 return $choice instanceof CustomerCoupon ? $choice->getId() : 0;
             },
@@ -238,9 +265,6 @@ class OrderTypeExtension extends AbstractTypeExtension
             'multiple' => false,
             'placeholder' => false,
             'mapped' => false,
-            'constraints' => [
-                new NotBlank(['message' => $message]),
-            ],
             'choices' => array_merge(
                 ['0' => trans('plugin_customer_coupon.front.shopping_customer_coupon.notuse')],
                 $choices

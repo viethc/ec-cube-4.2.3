@@ -89,40 +89,39 @@ class CustomerCouponRepository extends AbstractRepository
         return true;
     }
 
-    // public function findByActiveCoupon()
-    // {
-    //     $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
-
-    //     $qb->andWhere('c.enable_flag = :enable_flag')->setParameter('enable_flag', Constant::ENABLED);
-    //     $qb->andWhere('c.coupon_use_time > 0');
-    //     $qb->orderBy('c.coupon_lower_limit');
-
-    //     return $qb->getQuery()->getResult();
-    // }
-
-    public function findOneActiveCoupon($totalPrice = 0, $order = 'DESC')
+    /**
+     * Get danh sách Customer Coupon còn hiệu lực
+     */
+    public function findByActiveCoupons()
     {
         $qb = $this->createQueryBuilder('c')->select('c')->Where('c.visible = true');
 
-        // クーポンコード有効
+        $qb->andWhere('c.enable_flag = :enable_flag')->setParameter('enable_flag', Constant::ENABLED);
+        $qb->andWhere('c.coupon_use_time > 0');
+        $qb->orderBy('c.coupon_lower_limit');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Summary of findOneUseCoupon
+     * @param mixed $totalPrice
+     */
+    public function findOneUseCoupon($totalPrice = 0)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('c')
+            ->Where('c.visible = true');
         $qb->andWhere('c.enable_flag = :enable_flag')
             ->setParameter('enable_flag', Constant::ENABLED);
-
-        // 
         $qb->andWhere('c.coupon_use_time > 0');
 
-        //
         if ($totalPrice > 0) {
-            if ($order == 'DESC') {
-                $qb->andWhere('c.coupon_lower_limit <= :total_price')
-                    ->setParameter('total_price', $totalPrice)
-                    ->orderBy('c.coupon_lower_limit', $order);
-            } else {
-                $qb->andWhere('c.coupon_lower_limit >= :total_price')
-                ->setParameter('total_price', $totalPrice)
-                ->orderBy('c.coupon_lower_limit', $order);
-            }
+            $qb->andWhere('c.coupon_lower_limit <= :total_price')
+                ->setParameter('total_price', $totalPrice);
         }
+        // SORT BY
+        $qb->orderBy('c.coupon_lower_limit', 'DESC');
 
         // LIMIT 1
         $qb->setMaxResults(1);
